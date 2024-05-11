@@ -5,9 +5,9 @@ import World.organisms.Organism;
 
 import java.util.Random;
 
-public class Plant extends Organism {
-    public Plant(String image, String name, short power, short initiative, short x, short y, World w) {
-        super(image, name, power, initiative, x, y, w);
+public abstract class Plant extends Organism {
+    public Plant(String image, String name, short power, short initiative, short y, short x, World w) {
+        super(image, name, power, initiative, y, x, w);
     }
 
     @Override
@@ -18,6 +18,9 @@ public class Plant extends Organism {
             // rand number [0-9] + 1
             int rand = new Random().nextInt(10) + 1;
             if(rand == 2){
+
+            }
+            else{
 
             }
         }
