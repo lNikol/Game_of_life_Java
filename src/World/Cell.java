@@ -17,10 +17,12 @@ public class Cell {
     public void setOrganism(Organism organism){
         this.org = organism;
     }
+
     public void setPosition(short[] position){
         this.y = position[0];
         this.x = position[1];
     }
+
     public short[] getPosition(){
         return new short[] {this.y, this.x};
     }

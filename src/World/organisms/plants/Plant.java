@@ -2,6 +2,7 @@ package World.organisms.plants;
 
 import World.World;
 import World.organisms.Organism;
+import World.organisms.animals.Animal;
 
 import java.util.Random;
 
@@ -12,28 +13,22 @@ public abstract class Plant extends Organism {
 
     @Override
     public void action(){
-        super.hasMoved = true;
-
+        System.out.print("Action in plant");
         if(super.age > 2){
             // rand number [0-9] + 1
             int rand = new Random().nextInt(10) + 1;
             if(rand == 2){
-
-            }
-            else{
-
+               if(world.setOrganism(world.newPosition(this, (short) 1), this)){
+                   System.out.print("Plant child was created");
+               }
             }
         }
-        ++super.age;
     }
 
     @Override
     public void collision(Organism org) {
-
-    }
-
-    @Override
-    public void deleteOrganism() {
-
+        world.deleteOrganism(this);
+        world.replaceOrganism(org.getPosition(), org);
+        world.replaceOrganism(((Animal) org).getOldPosition(), null);
     }
 }

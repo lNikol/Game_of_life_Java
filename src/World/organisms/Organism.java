@@ -3,7 +3,13 @@ import World.World;
 import World.organisms.animals.*;
 import World.organisms.plants.*;
 
-public abstract class Organism {
+public abstract class Organism implements Cloneable{
+    protected short x = -1, y = -1, age = 0;
+    protected boolean isAlive = true, hasMoved = false;
+    protected String name = "", image = "";
+    protected short power = -1, initiative = -1;
+    protected World world;
+
     public static Class<?>[] organisms = {
             Guarana.class,
             Hogweed.class,
@@ -17,12 +23,6 @@ public abstract class Organism {
             Antelope.class,
             Human.class,
     };
-    protected String name = "", image = "";
-    protected short power = -1, initiative = -1;
-    protected short x = -1, y = -1, age = 0;
-    protected World world;
-    protected boolean hasMoved = false;
-
     public Organism(String image, String name, short power, short initiative,
                     short y, short x, World w) {
         this.image = image;
@@ -46,22 +46,33 @@ public abstract class Organism {
     public short getPower(){
         return this.power;
     }
+    public void setPower(short pow){
+        this.power = pow;
+    }
     public short getInitiative(){
         return this.initiative;
     }
     public short[] getPosition(){
         return new short[]{this.y, this.x};
     }
+
+
     public World getWorld(){
         return this.world;
     }
-    public abstract void deleteOrganism();
     public boolean getHasMoved(){
         return this.hasMoved;
     }
     public void setHasMoved(boolean moved){
         this.hasMoved = moved;
     }
+    public boolean getIsAlive(){
+        return this.isAlive;
+    }
+    public void setIsAlive(boolean alive){
+        this.isAlive = alive;
+    }
+
     public void setAge(short a){
         this.age = a;
     }
@@ -71,4 +82,5 @@ public abstract class Organism {
     public void writeToLog() {
         // Implementacja zapisu do logu
     }
+
 }
