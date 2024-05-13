@@ -1,7 +1,6 @@
 package World;
 
 import World.organisms.Organism;
-import World.organisms.animals.Animal;
 import World.organisms.animals.Human;
 
 import java.util.*;
@@ -14,6 +13,7 @@ public class World {
     ArrayList<Organism> children = new ArrayList<Organism>();
     Human human;
     boolean isHex = false, readFile = false; // w zaleznosci od przycisku w menu bedzie hex lub kratka
+    boolean humanIsAlive = true;
     public World(short w, short h, boolean readFile){
         this.width = w;
         this.height = h;
@@ -37,13 +37,16 @@ public class World {
                         if (j % 4 == 1) {
                             // plant generate
                             short[] randPos = randomPosition();
+                            if(randPos[0] == -1){
+                                continue;
+                            }
                             try{
                                 Class<?> org = Organism.organisms[(i + j) % 5];
                                 if(!organismsInGame.contains(org)){
                                     organismsInGame.add(org);
                                 }
                                 map.setOrganism(randPos, (Organism) org.getConstructors()[0].newInstance(randPos, this));
-                                organisms.add(map.getOrganism(randPos));
+                                organisms.add(map.getOrganism(randPos).org);
                             }
                             catch (Exception e){
                                 System.out.println(e);
@@ -52,13 +55,16 @@ public class World {
                         else if (j % 4 == 0) {
                             // animal generate
                             short[] randPos = randomPosition();
+                            if(randPos[0] == -1){
+                                continue;
+                            }
                             try{
                                 Class<?> org = Organism.organisms[(i + j) % 5 + 5];
                                 if(!organismsInGame.contains(org)){
                                     organismsInGame.add(org);
                                 }
                                 map.setOrganism(randPos, (Organism) org.getConstructors()[0].newInstance(randPos, this));
-                                organisms.add(map.getOrganism(randPos));
+                                organisms.add(map.getOrganism(randPos).org);
                             }
                             catch (Exception e){
                                 System.out.println(e);
@@ -75,19 +81,15 @@ public class World {
             else{
                 for(short i = 0; i < height; ++i){
                     for(short j = 0; j < width; ++j){
+
                     }
                 }
             }
         }
     }
 
-    public void addOrganism(short[] position, Organism org){
-        this.map.setOrganism(position,org);
-        organisms.add(org);
-    }
-
     public boolean setOrganism(short[] position, Organism org){
-        if(this.map.getOrganism(position) == null){
+        if(this.map.getOrganism(position).org == null){
             Organism child = org.copy(position);
             children.add(child);
             this.map.setOrganism(position, child);
@@ -99,15 +101,13 @@ public class World {
         }
     }
 
-    public Organism getOrganism(short[] position){
+    public Cell getOrganism(short[] position){
         return map.getOrganism(position);
     }
     // zastanowić się nad tym jak to lepiej zrobić
     // bo tej metody będę używał w Antylopie, roślinach, zwierzętach itp.
-    public ArrayList<short[]> checkCellsAround(short[] position, boolean onlyOne) {
-        // return ArrayList<Organism>
-
-        ArrayList<short[]> neighbors = new ArrayList<short[]>();
+    public ArrayList<Cell> checkCellsAround(short[] position, boolean onlyOne) {
+        ArrayList<Cell> neighbors = new ArrayList<Cell>();
         short y = position[0], x = position[1];
         if(!isHex){
             for (short i = -1; i < 2; ++i) {
@@ -116,24 +116,22 @@ public class World {
                     short newY = (short)(y + i);
                     short newX = (short)(x + j);
                     if ((newX < width && newX >= 0) && (newY < height && newY >= 0)) {
-                        Organism organism = map.getOrganism(new short[]{newY, newX});
-                        if (onlyOne && organism == null){
-                            return new ArrayList<short[]>(Collections.singleton(new short[]{newY, newX}));
+                        Cell cell = map.getOrganism(new short[]{newY, newX});
+                        if (onlyOne && cell.org == null){
+                            return new ArrayList<Cell>(Collections.singleton(cell));
                         }
-
-                        neighbors.add(new short[]{newY,newX});
+                        neighbors.add(cell);
                     }
                 }
             }
             if (onlyOne){
                 if (!neighbors.isEmpty()){
-                    return new ArrayList<short[]>(Collections.singleton(neighbors.getFirst()));
+                    return new ArrayList<Cell>(Collections.singleton(neighbors.getFirst()));
                 }
                 else{
-                    neighbors.add(new short[]{-1,-1});
+                    neighbors.add(new Cell((short) -1,(short) -1,null));
                     return neighbors;
                 }
-
             }
             return neighbors;
         }
@@ -155,28 +153,28 @@ public class World {
             }
             return neighbors;*/
         }
-        neighbors.add(new short[]{-1,-1});
+        neighbors.add(new Cell((short) -1,(short) -1,null));
         return neighbors;
     }
 
     public short[] randomPosition(){
-        if(!isHex){
-            Random random = new Random();
-            short x = (short)(random.nextInt(width));
-            short y = (short)(random.nextInt(height));
-            while (map.getOrganism(y, x) != null) {
-                x = (short)(random.nextInt(width));
-                y = (short)(random.nextInt(height));
+        Random random = new Random();
+        short counter = 0;
+        short x = (short)(random.nextInt(width));
+        short y = (short)(random.nextInt(height));
+        while (map.getOrganism(y, x).org != null) {
+            x = (short)(random.nextInt(width));
+            y = (short)(random.nextInt(height));
+            if(++counter >= 100){
+                return new short[] {-1, -1};
             }
-            return new short[] {y,x};
         }
-        else{
-            return new short[] {-1, -1};
-        }
+        return new short[] {y,x};
     }
 
     public void takeATurn(){
-        if(human.getIsAlive()){
+        humanIsAlive = human.getIsAlive();
+        if(humanIsAlive){
             short childrenSize = (short)children.size();
             for(short i = 0; i < childrenSize; ++i){
                 if(children.get(i) != null){
@@ -220,11 +218,12 @@ public class World {
             return;
         }
     }
+
     public void drawWorld(){
         String s = new String();
         for (short i = 0; i < height; ++i) {
             for (short j = 0; j < width; ++j) {
-                Organism org = this.map.getOrganism(i, j);
+                Organism org = this.map.getOrganism(i, j).org;
                 if(org == null){
                     s+=" . ";
                 }
@@ -268,11 +267,10 @@ public class World {
         short[] pos = org.getPosition();
         short y = pos[0], x = pos[1];
 
-        if(!getIsHex()){
-            // ruch tylko w 4 strony, nie w 8 stron (brak kątowych ruchów)
+        if(!isHex){
             if (y == 0) {
                 if (x == 0) {
-                    switch (new Random().nextInt(2) + 1) {
+                    switch (new Random().nextInt(3) + 1) {
                         case 1: { // down
                             y += dist;
                             break;
@@ -281,10 +279,15 @@ public class World {
                             x += dist;
                             break;
                         }
+                        case 3: { // right-down
+                            x += dist;
+                            y += dist;
+                            break;
+                        }
                     }
                 }
                 else if (x == width) {
-                    switch (new Random().nextInt(2) + 1) {
+                    switch (new Random().nextInt(3) + 1) {
                         case 1: { // down
                             y += dist;
                             break;
@@ -293,20 +296,47 @@ public class World {
                             x -= dist;
                             break;
                         }
+                        case 3: { // left-down
+                            x -= dist;
+                            y += dist;
+                            break;
+                        }
                     }
                 }
                 else {
-                    switch (new Random().nextInt(3) + 1) {
+                    switch (new Random().nextInt(5) + 1) {
                         case 1: { // down
                             y += dist;
                             break;
                         }
                         case 2: { // right
-                            x += (x + dist <= width)? dist :1;
+                            x += (x + dist < width)? dist :1;
                             break;
                         }
                         case 3: { // left
                             x -= (x - dist >= 0)? dist :1;
+                            break;
+                        }
+                        case 4: { //left-down
+                            if(x - dist >= 0){
+                                x-=dist;
+                                y+=dist;
+                            }
+                            else{
+                                x-=1;
+                                y+=1;
+                            }
+                            break;
+                        }
+                        case 5: { //right-down
+                            if(x + dist < width){
+                                x+=dist;
+                                y+=dist;
+                            }
+                            else{
+                                x+=1;
+                                y+=1;
+                            }
                             break;
                         }
                     }
@@ -314,7 +344,7 @@ public class World {
             }
             else if (y == height) {
                 if (x == 0) {
-                    switch (new Random().nextInt(2) + 1) {
+                    switch (new Random().nextInt(3) + 1) {
                         case 1: { // top
                             y -= dist;
                             break;
@@ -323,10 +353,15 @@ public class World {
                             x += dist;
                             break;
                         }
+                        case 3: { // right-top
+                            x += dist;
+                            y -= dist;
+                            break;
+                        }
                     }
                 }
                 else if (x == width) {
-                    switch (new Random().nextInt(2) + 1) {
+                    switch (new Random().nextInt(3) + 1) {
                         case 1: { // top
                             y -= dist;
                             break;
@@ -335,10 +370,15 @@ public class World {
                             x -= dist;
                             break;
                         }
+                        case 3: { // left-top
+                            x -= dist;
+                            y -= dist;
+                            break;
+                        }
                     }
                 }
                 else {
-                    switch (new Random().nextInt(3) + 1) {
+                    switch (new Random().nextInt(5) + 1) {
                         case 1: { // top
                             y -= dist;
                             break;
@@ -348,16 +388,38 @@ public class World {
                             break;
                         }
                         case 3: { // right
-                            x += (x + dist <= width)? dist :1;
+                            x += (x + dist < width)? dist :1;
+                            break;
+                        }
+                        case 4: { // right-top
+                            if(x + dist < width){
+                                x+=dist;
+                                y-=dist;
+                            }
+                            else{
+                                x+=1;
+                                y-=1;
+                            }
+                            break;
+                        }
+                        case 5: { // left-top
+                            if(x - dist >= 0){
+                                x-=dist;
+                                y-=dist;
+                            }
+                            else{
+                                x-=1;
+                                y-=1;
+                            }
                             break;
                         }
                     }
                 }
             }
             else if (x == width && (y >= 1 && y < height)) {
-                switch (new Random().nextInt(3) + 1) {
+                switch (new Random().nextInt(5) + 1) {
                     case 1: { // down
-                        y += (y + dist <= height)? dist :1;
+                        y += (y + dist < height)? dist :1;
                         break;
                     }
                     case 2: { // top
@@ -368,10 +430,32 @@ public class World {
                         x -= dist;
                         break;
                     }
+                    case 4: { // left-top
+                        if(y-dist >= 0){
+                            x-=dist;
+                            y-=dist;
+                        }
+                        else{
+                            x-=1;
+                            y-=1;
+                        }
+                        break;
+                    }
+                    case 5: { // left-down
+                        if(y + dist < height){
+                            x-=dist;
+                            y+=dist;
+                        }
+                        else{
+                            x-=1;
+                            y+=1;
+                        }
+                        break;
+                    }
                 }
             }
             else if (x == 0 && (y >= 1 && y < height)) {
-                switch (new Random().nextInt(3) + 1) {
+                switch (new Random().nextInt(5) + 1) {
                     case 1: { // down
                         y += (y + dist <= height)? dist :1;
                         break;
@@ -384,12 +468,34 @@ public class World {
                         x += dist;
                         break;
                     }
+                    case 4: { // right-top
+                        if(y-dist >= 0){
+                            x+=dist;
+                            y-=dist;
+                        }
+                        else{
+                            x+=1;
+                            y-=1;
+                        }
+                        break;
+                    }
+                    case 5: { // right-down
+                        if(y + dist < height){
+                            x+=dist;
+                            y+=dist;
+                        }
+                        else{
+                            x+=1;
+                            y+=1;
+                        }
+                        break;
+                    }
                 }
             }
             else {
-                switch (new Random().nextInt(4) + 1) {
+                switch (new Random().nextInt(8) + 1) {
                     case 1: { // down
-                        y += (y + dist <= height)? dist :1;
+                        y += (y + dist < height)? dist :1;
                         break;
                     }
                     case 2: { // top
@@ -397,11 +503,55 @@ public class World {
                         break;
                     }
                     case 3: { // right
-                        x += (x + dist <= width)? dist :1;
+                        x += (x + dist < width)? dist :1;
                         break;
                     }
                     case 4: { // left
                         x -= (x - dist >= 0)? dist :1;
+                        break;
+                    }
+                    case 5: { // left-top
+                        if(y - dist >= 0 && x - dist >= 0){
+                            x-=dist;
+                            y-=dist;
+                        }
+                        else{
+                            x-=1;
+                            y-=1;
+                        }
+                        break;
+                    }
+                    case 6: { // left-down
+                        if(y + dist < height && x - dist >= 0){
+                            x-=dist;
+                            y+=dist;
+                        }
+                        else{
+                            x-=1;
+                            y+=1;
+                        }
+                        break;
+                    }
+                    case 7: { // right-top
+                        if(y-dist >= 0 && x + dist < width){
+                            x+=dist;
+                            y-=dist;
+                        }
+                        else{
+                            x+=1;
+                            y-=1;
+                        }
+                        break;
+                    }
+                    case 8: { // right-down
+                        if(y + dist < height && x + dist < width){
+                            x+=dist;
+                            y+=dist;
+                        }
+                        else{
+                            x+=1;
+                            y+=1;
+                        }
                         break;
                     }
                 }
@@ -415,6 +565,9 @@ public class World {
 
     public short getWidth(){
         return this.width;
+    }
+    public boolean getHumanIsAlive(){
+        return this.humanIsAlive;
     }
 
     public short getHeight(){

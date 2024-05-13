@@ -1,6 +1,7 @@
 package World.organisms.plants;
 
 import World.World;
+import World.Cell;
 import World.organisms.Organism;
 import World.organisms.animals.Animal;
 
@@ -18,11 +19,11 @@ public class Hogweed extends Plant{
     @Override
     public void action(){
         System.out.print("Action in hogweed");
-        ArrayList<short[]> neighbors = world.checkCellsAround(getPosition(), false);
+        ArrayList<Cell> neighbors = world.checkCellsAround(getPosition(), false);
         for(short i = 0; i < neighbors.size(); ++i){
-            Organism org = world.getOrganism(neighbors.get(i));
-            if(org instanceof Animal){
-                world.deleteOrganism(org);
+            Cell cell = neighbors.get(i);
+            if(cell.org instanceof Animal){
+                world.deleteOrganism(cell.org);
             }
         }
     }

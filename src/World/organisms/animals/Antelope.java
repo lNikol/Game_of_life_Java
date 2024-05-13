@@ -1,6 +1,7 @@
 package World.organisms.animals;
 
 import World.World;
+import World.Cell;
 import World.organisms.Organism;
 
 import java.util.ArrayList;
@@ -18,17 +19,17 @@ public class Antelope extends Animal{
     public void action(){
         short[] pos = world.newPosition(this, (short) 2);
         setPosition(pos, false);
-        collision(world.getOrganism(pos));
+        collision(world.getOrganism(pos).org);
     }
 
     @Override
     public void collision(Organism other) {
         if(other != null){
             if(Math.random() > 0.5){
-                ArrayList<short[]> neighbors = world.checkCellsAround(getPosition(), false);
+                ArrayList<Cell> neighbors = world.checkCellsAround(getPosition(), false);
                 for(short i = 0; i < neighbors.size(); ++i){
-                    if(world.getOrganism(neighbors.get(i)) == null){
-                        super.collision(other);
+                    if(neighbors.get(i).org == null){
+                        super.collision(neighbors.get(i).org);
                         return;
                     }
                 }

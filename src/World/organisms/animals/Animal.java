@@ -1,6 +1,7 @@
 package World.organisms.animals;
 
 import World.World;
+import World.Cell;
 import World.organisms.Organism;
 import World.organisms.plants.Plant;
 
@@ -42,7 +43,7 @@ public abstract class Animal extends Organism {
         System.out.print("Before: " + x + " " + y);
         move();
         System.out.print("after move: " + x + " " + y);
-        collision(world.getOrganism(getPosition()));
+        collision(world.getOrganism(getPosition()).org);
     }
 
     @Override
@@ -52,8 +53,8 @@ public abstract class Animal extends Organism {
                 if(!reproduction(this)){
                     reproduction(org);
                 }
-                x = oldX;
                 y = oldY;
+                x = oldX;
                 return;
             }
             else{
@@ -65,8 +66,8 @@ public abstract class Animal extends Organism {
                 }
                 else{
                     if (((Animal) org).reboundAttack(this)) {
-                        x = oldX;
                         y = oldY;
+                        x = oldX;
                         world.deleteOrganism(org);
                     }
                     else{
@@ -74,8 +75,8 @@ public abstract class Animal extends Organism {
                             short[] newPosition = org.getPosition();
                             world.deleteOrganism(org);
                             world.replaceOrganism(newPosition, this);
-                            oldX = x;
                             oldY = y;
+                            oldX = x;
                         }
                         else{
                             world.deleteOrganism(this);
@@ -90,18 +91,18 @@ public abstract class Animal extends Organism {
         else{
             world.replaceOrganism(getPosition(), this);
             world.replaceOrganism(getOldPosition(), null);
-            oldX = x;
             oldY = y;
+            oldX = x;
         }
     }
 
     public boolean reproduction(Organism other){
-        ArrayList<short[]> emptyPlace = world.checkCellsAround(other.getPosition(), true);
-        if(emptyPlace.getFirst()[0] == -1 || emptyPlace.getFirst() != null){
+        ArrayList<Cell> emptyPlace = world.checkCellsAround(other.getPosition(), true);
+        if(emptyPlace.getFirst().org != null && emptyPlace.getFirst().y == -1){
             return false;
         }
         else{
-           return world.setOrganism(emptyPlace.getFirst(), other);
+           return world.setOrganism(new short[] {emptyPlace.getFirst().y, emptyPlace.getFirst().x}, other);
         }
     }
 

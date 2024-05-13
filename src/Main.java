@@ -5,8 +5,9 @@ import World.World;
 public class Main {
     public static void main(String[] args) {
         World game = new World((short)5, (short)5, false);
-        for(short i = 0; i < 5; ++i){
-            System.out.println("Turn: " + i);
+        int i = 0;
+        while (game.getHumanIsAlive()){
+            System.out.println("Turn: " + i++);
             game.takeATurn();
         }
     }

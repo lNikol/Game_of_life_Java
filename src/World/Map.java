@@ -32,6 +32,7 @@ public class Map {
     public void replaceOrganism(short[] position, Organism newOrg){
         this.map.get(position[0]).get(position[1]).setOrganism(newOrg);
     }
+
     public void deleteOrganism(Organism oldOrg){
         if(oldOrg == null) {
             return;
@@ -51,11 +52,11 @@ public class Map {
         replaceOrganism(oldPos, null);
         oldOrg.setIsAlive(false);
     }
-    public Organism getOrganism(short[] position){
-        return this.map.get(position[0]).get(position[1]).org;
+    public Cell getOrganism(short[] position){
+        return this.map.get(position[0]).get(position[1]);
     }
-    public Organism getOrganism(short y, short x){
-        return this.map.get(y).get(x).org;
+    public Cell getOrganism(short y, short x){
+        return this.map.get(y).get(x);
     }
 
 }

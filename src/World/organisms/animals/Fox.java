@@ -2,7 +2,7 @@ package World.organisms.animals;
 
 import World.World;
 import World.organisms.Organism;
-
+import World.Cell;
 import java.util.ArrayList;
 
 public class Fox extends Animal{
@@ -18,16 +18,16 @@ public class Fox extends Animal{
 
     @Override
     public void action(){
-        ArrayList<short[]> pos = (world.checkCellsAround(getPosition(), false));
+        ArrayList<Cell> pos = (world.checkCellsAround(getPosition(), false));
 
         for(short i = 0; i < pos.size(); ++i){
-            if(pos.get(i)[0] == -1){
+            if(pos.get(i) != null && pos.get(i).getPosition()[0] == -1){
                 return;
             }
-            Organism org = world.getOrganism(pos.get(i));
-            if(org == null || power >= org.getPower()){
-                setPosition(pos.get(i), false);
-                super.collision(org);
+            Cell cell = world.getOrganism(pos.get(i).getPosition());
+            if(cell.org == null || (cell.org != null && power >= cell.org.getPower())){
+                setPosition(new short[] {cell.y, cell.x}, false);
+                super.collision(cell.org);
                 return;
             }
         }
