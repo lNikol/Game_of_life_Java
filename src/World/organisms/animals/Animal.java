@@ -97,6 +97,9 @@ public abstract class Animal extends Organism {
     }
 
     public boolean reproduction(Organism other){
+        if(age <= 2){
+            return false;
+        }
         ArrayList<Cell> emptyPlace = world.checkCellsAround(other.getPosition(), true);
         if(emptyPlace.getFirst().org != null && emptyPlace.getFirst().y == -1){
             return false;

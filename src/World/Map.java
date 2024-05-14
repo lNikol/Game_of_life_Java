@@ -50,7 +50,6 @@ public class Map {
             oldPos = oldOrg.getPosition();
         }
         replaceOrganism(oldPos, null);
-        oldOrg.setIsAlive(false);
     }
     public Cell getOrganism(short[] position){
         return this.map.get(position[0]).get(position[1]);
