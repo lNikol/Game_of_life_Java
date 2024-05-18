@@ -3,6 +3,7 @@ package World;
 import World.organisms.Organism;
 import World.organisms.animals.Human;
 
+import javax.swing.*;
 import java.util.*;
 
 public class World {
@@ -12,8 +13,9 @@ public class World {
     ArrayList<Class<?>> organismsInGame = new ArrayList<Class<?>>();
     ArrayList<Organism> children = new ArrayList<Organism>();
     Human human;
-    boolean isHex = false, readFile = false; // w zaleznosci od przycisku w menu bedzie hex lub kratka
+    boolean isHex = false, readFile = false, keyPressed = false; // w zaleznosci od przycisku w menu bedzie hex lub kratka
     boolean humanIsAlive = true;
+    boolean isPlayerTurn = false;
     public World(short w, short h, boolean readFile){
         this.width = w;
         this.height = h;
@@ -88,6 +90,15 @@ public class World {
         }
     }
 
+    public boolean getKeyPressed(){
+        return keyPressed;
+    }
+    public void setKeyPressed(boolean pressed){
+        this.keyPressed = pressed;
+    }
+    public void setKey(char s){
+        this.human.setKey(s);
+    }
     public boolean setOrganism(short[] position, Organism org){
         if(this.map.getOrganism(position).org == null){
             Organism child = org.copy(position);
@@ -100,7 +111,12 @@ public class World {
             return false;
         }
     }
-
+    public void setIsPlayerTurn(boolean isPlayerTurn){
+        this.isPlayerTurn = isPlayerTurn;
+    }
+    public boolean getIsPlayerTurn(){
+        return this.isPlayerTurn;
+    }
     public Cell getOrganism(short[] position){
         return map.getOrganism(position);
     }
