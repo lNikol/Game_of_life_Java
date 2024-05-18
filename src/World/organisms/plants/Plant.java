@@ -10,10 +10,11 @@ public abstract class Plant extends Organism {
     public Plant(String image, String name, short power, short initiative, short y, short x, World w) {
         super(image, name, power, initiative, y, x, w);
     }
-
+    public Plant(String image, String name, short power, short initiative, short y, short x, short age, World w) {
+        super(image, name, power, initiative, y, x, age, w);
+    }
     @Override
     public void action(){
-        System.out.print("Action in plant");
         if(super.age > 2){
             // rand number [0-9] + 1
             int rand = new Random().nextInt(10) + 1;

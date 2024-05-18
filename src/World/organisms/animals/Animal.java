@@ -5,13 +5,18 @@ import World.Cell;
 import World.organisms.Organism;
 import World.organisms.plants.Plant;
 
+import javax.swing.*;
 import java.util.ArrayList;
-import java.util.Random;
 
 public abstract class Animal extends Organism {
     protected short oldX, oldY;
     public Animal(String image, String name, short power, short initiative, short y, short x, World w) {
         super(image, name, power, initiative, y, x, w);
+        this.oldX = x;
+        this.oldY = y;
+    }
+    public Animal(String image, String name, short power, short initiative, short y, short x, short age, World w) {
+        super(image, name, power, initiative, y, x, age, w);
         this.oldX = x;
         this.oldY = y;
     }
@@ -55,7 +60,6 @@ public abstract class Animal extends Organism {
                 }
                 y = oldY;
                 x = oldX;
-                return;
             }
             else{
                 if(org instanceof Antelope){
@@ -63,6 +67,10 @@ public abstract class Animal extends Organism {
                     if(!isAlive){
                         world.deleteOrganism(this);
                     }
+                    world.replaceOrganism(getOldPosition(), null);
+                    world.replaceOrganism(getPosition(), this);
+                    oldY = y;
+                    oldX = x;
                 }
                 else{
                     if (((Animal) org).reboundAttack(this)) {
@@ -74,6 +82,7 @@ public abstract class Animal extends Organism {
                         if(power >= org.getPower()){
                             short[] newPosition = org.getPosition();
                             world.deleteOrganism(org);
+                            world.replaceOrganism(getOldPosition(), null);
                             world.replaceOrganism(newPosition, this);
                             oldY = y;
                             oldX = x;
@@ -87,6 +96,8 @@ public abstract class Animal extends Organism {
         }
         else if(org instanceof Plant){
             org.collision(this);
+            oldY = y;
+            oldX = x;
         }
         else{
             world.replaceOrganism(getPosition(), this);
@@ -108,7 +119,5 @@ public abstract class Animal extends Organism {
            return world.setOrganism(new short[] {emptyPlace.getFirst().y, emptyPlace.getFirst().x}, other);
         }
     }
-
-
     public abstract boolean reboundAttack(Organism org);
 }

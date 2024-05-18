@@ -4,7 +4,14 @@ import World.organisms.Organism;
 import World.organisms.animals.Human;
 
 import javax.swing.*;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 public class World {
     Map map;
@@ -16,24 +23,25 @@ public class World {
     boolean isHex = false, readFile = false, keyPressed = false; // w zaleznosci od przycisku w menu bedzie hex lub kratka
     boolean humanIsAlive = true;
     boolean isPlayerTurn = false;
-    public World(short w, short h, boolean readFile){
+    String fileName;
+    public World(short w, short h, boolean readFile, String fileName){
         this.width = w;
         this.height = h;
         this.readFile = readFile;
+        this.fileName = fileName;
         this.map = new Map(width, height, isHex);
-
-        human = new Human((short) 0,(short) 0,this);
-        organisms.add(human);
-        organismsInGame.add(Organism.organisms[(short)(Organism.organisms.length-1)]);
-        this.map.setOrganism(new short[]{0,0}, human);
-        //generateWorld();
+        generateWorld();
     }
     public void generateWorld(){
         if(!isHex){
             if(readFile){
-
+                readFromFile();
             }
             else{
+                human = new Human((short) 0,(short) 0,this);
+                organisms.add(human);
+                organismsInGame.add(Organism.organisms[(short)(Organism.organisms.length-1)]);
+                this.map.setOrganism(new short[]{0,0}, human);
                 for(short i = 0; i < height; ++i){
                     for(short j = 0; j < width; ++j){
                         if (j % 4 == 1) {
@@ -43,7 +51,7 @@ public class World {
                                 continue;
                             }
                             try{
-                             Class<?> org = Organism.organisms[(i + j) % 5];
+                                Class<?> org = Organism.organisms[(i + j) % 5];
                                 if(!organismsInGame.contains(org)){
                                     organismsInGame.add(org);
                                 }
@@ -78,7 +86,7 @@ public class World {
         }
         else{
             if(readFile){
-
+                readFromFile();
             }
             else{
                 for(short i = 0; i < height; ++i){
@@ -181,43 +189,46 @@ public class World {
         while (map.getOrganism(y, x).org != null) {
             x = (short)(random.nextInt(width));
             y = (short)(random.nextInt(height));
-            if(++counter >= 100){
+            if(++counter >= 300){
                 return new short[] {-1, -1};
             }
         }
         return new short[] {y,x};
     }
 
+    public void updateOrganisms(){
+        short childrenSize = (short)children.size();
+        for(short i = 0; i < childrenSize; ++i){
+            if(children.get(i) != null){
+                organisms.add(children.get(i));
+            }
+        }
+        children.clear();
+
+        for(short i = (short) (organisms.size() - 1); i >= 0; --i) {
+            if (!organisms.get(i).getIsAlive()) {
+                organisms.remove(i);
+            }
+        }
+        organisms.sort(new Comparator<Organism>() {
+            @Override
+            public int compare(Organism a, Organism b) {
+                if(a.getInitiative() == b.getInitiative()){
+                    return Integer.compare(b.getAge(), a.getAge());
+                }
+                return Integer.compare(b.getInitiative(), a.getInitiative());
+            }
+        });
+    }
+
     public void takeATurn(){
-        humanIsAlive = human.getIsAlive();
+        humanIsAlive = (human == null) ? false : human.getIsAlive();
         if(humanIsAlive){
-            short childrenSize = (short)children.size();
-            for(short i = 0; i < childrenSize; ++i){
-                if(children.get(i) != null){
-                    organisms.add(children.get(i));
-                }
-            }
-            children.clear();
-
-            for(short i = (short) (organisms.size() - 1); i >= 0; --i) {
-                if (!organisms.get(i).getIsAlive()) {
-                    organisms.remove(i);
-                }
-            }
-
             for(short i = 0; i < organisms.size(); ++i){
                 organisms.get(i).setAge((short)(organisms.get(i).getAge()+1));
                 organisms.get(i).setHasMoved(false);
             }
-            organisms.sort(new Comparator<Organism>() {
-                @Override
-                public int compare(Organism a, Organism b) {
-                    if(a.getInitiative() == b.getInitiative()){
-                        return Integer.compare(b.getAge(), a.getAge());
-                    }
-                    return Integer.compare(b.getInitiative(), a.getInitiative());
-                }
-            });
+            updateOrganisms();
             drawWorld();
             for(Organism org : organisms){
                 if(!org.getHasMoved() && org.getIsAlive()){
@@ -226,12 +237,10 @@ public class World {
                 }
                 System.out.println();
             }
-
             drawWorld();
         }
         else{
             System.out.println("You have died");
-            return;
         }
     }
 
@@ -596,5 +605,59 @@ public class World {
     }
     public void setIsHex(boolean isH){
         this.isHex = isH;
+    }
+
+    public String saveToLog(){
+        updateOrganisms();
+        String toSave = "";
+        for (short i = 0; i < organisms.size(); ++i) {
+            toSave+=organisms.get(i).writeToLog();
+        };
+        return toSave;
+    }
+    public void readFromFile(){
+        try (Stream<String> lines = Files.lines(Paths.get(fileName))) {
+            lines.forEach((line)->{
+                if (!line.startsWith("World:")) {
+                    String firstWord = line.split("\\(y,x\\): ")[0];
+                    String regex = "\\d+";
+                    short[] numbers = new short[5];
+                    int index = 0;
+                    Matcher matcher = Pattern.compile(regex).matcher(line);
+                    while (matcher.find()) {
+                        numbers[index++] = Short.parseShort(matcher.group());
+                    }
+
+                    for (Class<?> organism : Organism.organisms) {
+                        if (firstWord.equals(organism.getSimpleName())){
+                            short[] pos = new short[]{numbers[0],numbers[1]};
+                            try {
+                                if(firstWord.equals("Human")){
+                                    this.human = new Human(numbers[0], numbers[1], numbers[2], numbers[3], numbers[4], this);
+                                    map.setOrganism(pos, this.human);
+                                    organisms.add(this.human);
+                                }
+                                else{
+                                    map.setOrganism(pos, (Organism) organism.getConstructors()[1].newInstance(numbers[0], numbers[1], numbers[2], numbers[3], numbers[4], this));
+                                    organisms.add(map.getOrganism(pos).org);
+                                }
+
+                            } catch (InstantiationException e) {
+                                throw new RuntimeException(e);
+                            } catch (IllegalAccessException e) {
+                                throw new RuntimeException(e);
+                            } catch (InvocationTargetException e) {
+                                throw new RuntimeException(e);
+                            }
+                            if(!organismsInGame.contains(organism)){
+                                organismsInGame.add(organism);
+                            }
+                        }
+                    }
+                }
+            });
+        } catch (IOException e) {
+            System.err.println("Wystąpił błąd podczas odczytu pliku: " + e.getMessage());
+        }
     }
 }

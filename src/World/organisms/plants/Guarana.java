@@ -9,21 +9,20 @@ public class Guarana extends Plant{
         super("Guarana.png", "Guarana", (short)0, (short)0, position[0], position[1], w);
         System.out.print("Guarana (" + x + "," + y + ") was created\n");
     }
+    public Guarana(short y, short x, short power, short initiative, short age, World w) {
+        super("Guarana.png", "Guarana", power, initiative, y, x, age, w);
+        System.out.print("Guarana (" + x + "," + y + ") was created\n");
+    }
     @Override
     public Organism copy(short[] position){
         return new Guarana(position, world);
-    }
-    @Override
-    public void action(){
-        System.out.print("Action in guarana");
-        super.action();
     }
 
     @Override
     public void collision(Organism org) {
         org.setPower((short)(org.getPower() + 3));
         world.deleteOrganism(this);
-        world.replaceOrganism(org.getPosition(), org);
         world.replaceOrganism(((Animal) org).getOldPosition(), null);
+        world.replaceOrganism(org.getPosition(), org);
     }
 }

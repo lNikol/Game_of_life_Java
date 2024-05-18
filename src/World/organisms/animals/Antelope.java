@@ -11,6 +11,11 @@ public class Antelope extends Animal{
         super("Antelope.png", "Antelope", (short)4, (short)4, position[0], position[1], w);
         System.out.print("Antelope (" + x + "," + y + ") was created\n");
     }
+    public Antelope(short y, short x, short power, short initiative, short age, World w) {
+        super("Antelope.png", "Antelope", power, initiative, y, x, age, w);
+        System.out.print("Antelope (" + x + "," + y + ") was created\n");
+    }
+
     @Override
     public Organism copy(short[] position){
         return new Antelope(position, world);
@@ -33,6 +38,7 @@ public class Antelope extends Animal{
                         return;
                     }
                 }
+                super.collision(other);
             }
             else{
                 super.collision(other);

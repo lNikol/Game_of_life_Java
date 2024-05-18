@@ -3,18 +3,19 @@ package World.organisms.animals;
 import World.World;
 import World.organisms.Organism;
 
-import javax.swing.*;
-import java.awt.event.KeyEvent;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.Random;
 
 public class Human extends Animal{
-    private boolean isAbilityOn = false;
+    private boolean isAbilityOn = false, isAbilityActive = false, abilityKeyPressed = false; // isAbilityActive 50%
     private char lastKeyPressed;
+    private short counterAfterAbility = 0, abilityCounter = -1;
 
     public Human(short y, short x, World w){
         super("Human.png", "Human", (short)5, (short)4, y, x, w);
+        System.out.print("Human (" + x + "," + y + ") was created\n");
+    }
+    public Human(short y, short x, short power, short initiative, short age, World w) {
+        super("Human.png", "Human", power, initiative, y, x, age, w);
         System.out.print("Human (" + x + "," + y + ") was created\n");
     }
     @Override
@@ -24,13 +25,9 @@ public class Human extends Animal{
 
     @Override
     public void action(){
-        System.out.println("Action in human - waiting for key press");
         world.setIsPlayerTurn(true);
-
-        // dodać inny warunek dla pętli while
         while (world.getIsPlayerTurn()) {
             if (world.getKeyPressed()) {
-                System.out.println("In action");
                 world.setKeyPressed(false); // resetujemy stan po wykryciu naciśnięcia
                 moveSystem();
             }
@@ -40,17 +37,49 @@ public class Human extends Animal{
                 e.printStackTrace();
             }
         }
-
-        System.out.println("After while");
         world.setIsPlayerTurn(false);
     }
 
     public void setKey(char key){
         this.lastKeyPressed = key;
+        if(key == 'o'){
+            this.abilityKeyPressed = true;
+            this.isAbilityOn = true;
+        }
+    }
+
+    public void setAbilityKeyPressed(boolean pressed){
+        this.abilityKeyPressed = pressed;
     }
     @Override
     public boolean reboundAttack(Organism org){
         return false;
+    }
+
+    public void setAbilityActive(){
+        if(abilityKeyPressed){
+            ++abilityCounter;
+            if(abilityCounter <= 2){
+                isAbilityActive = true;
+            }
+            else if(abilityCounter <= 4){
+                isAbilityActive = new Random().nextBoolean();
+            }
+            if(abilityCounter >= 5){
+                ++counterAfterAbility;
+                isAbilityActive = false;
+                isAbilityOn = false;
+                if(counterAfterAbility >= 5){
+                    counterAfterAbility = 0;
+                    abilityCounter = 0;
+                    abilityKeyPressed = false;
+                }
+                else{
+                    System.out.println("The ability cannot be activated");
+                }
+            }
+
+        }
     }
 
     public void moveSystem(){
@@ -58,7 +87,8 @@ public class Human extends Animal{
             switch (lastKeyPressed){
                 case 'w': {
                     if(this.y >= 1 && this.y < world.getHeight()){
-                        if(isAbilityOn){
+                        setAbilityActive();
+                        if(isAbilityOn && isAbilityActive){
                             if(this.y - 2 >= 0){
                                 this.y -= 2;
                             }
@@ -80,8 +110,9 @@ public class Human extends Animal{
                 }
                 case 's': {
                     if(this.y >= 0 && this.y < world.getHeight() - 1){
-                        if(isAbilityOn){
-                            if(this.y + 2 >= world.getHeight() - 1){
+                        setAbilityActive();
+                        if(isAbilityOn && isAbilityActive){
+                            if(this.y + 2 < world.getHeight()){
                                 this.y += 2;
                             }
                             else{
@@ -102,7 +133,8 @@ public class Human extends Animal{
                 }
                 case 'a': {
                     if(this.x >= 1 && this.x < world.getWidth()){
-                        if(isAbilityOn){
+                        setAbilityActive();
+                        if(isAbilityOn && isAbilityActive){
                             if(this.x - 2 >= 0){
                                 this.x -= 2;
                             }
@@ -124,7 +156,8 @@ public class Human extends Animal{
                 }
                 case 'd': {
                     if(this.x >= 0 && this.x < world.getWidth() - 1){
-                        if(isAbilityOn){
+                        setAbilityActive();
+                        if(isAbilityOn && isAbilityActive){
                             if(this.x + 2 < world.getWidth()){
                                 this.x += 2;
                             }

@@ -12,13 +12,16 @@ public class Hogweed extends Plant{
         super("Hogweed.png", "Hogweed", (short)10, (short)0, position[0], position[1], w);
         System.out.print("Hogweed (" + x + "," + y + ") was created\n");
     }
+    public Hogweed(short y, short x, short power, short initiative, short age, World w) {
+        super("Hogweed.png", "Hogweed", power, initiative, y, x, age, w);
+        System.out.print("Hogweed (" + x + "," + y + ") was created\n");
+    }
     @Override
     public Organism copy(short[] position){
         return new Dandelion(position, world);
     }
     @Override
     public void action(){
-        System.out.print("Action in hogweed");
         ArrayList<Cell> neighbors = world.checkCellsAround(getPosition(), false);
         for(short i = 0; i < neighbors.size(); ++i){
             Cell cell = neighbors.get(i);

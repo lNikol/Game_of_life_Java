@@ -9,6 +9,10 @@ public class Wolfberries extends Plant{
         super("Wolfberries.png", "Wolfberries", (short)99, (short)0, position[0], position[1], w);
         System.out.print("Wolfberries (" + x + "," + y + ") was created\n");
     }
+    public Wolfberries(short y, short x, short power, short initiative, short age, World w) {
+        super("Wolfberries.png", "Wolfberries", power, initiative, y, x, age, w);
+        System.out.print("Wolfberries (" + x + "," + y + ") was created\n");
+    }
     @Override
     public Organism copy(short[] position){
         return new Wolfberries(position, world);
