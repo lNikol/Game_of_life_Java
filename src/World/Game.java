@@ -86,34 +86,34 @@ public class Game extends JFrame {
     }
 
     public void readLogFile() throws IOException {
-            try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
-                String line = br.readLine();
-                if (line != null && line.startsWith("World:")) {
-                    String[] worldInfo = line.split(" ");
-                    short height = Short.parseShort(worldInfo[2].split(",")[0]);
-                    short width = Short.parseShort(worldInfo[worldInfo.length - 1]);
-                    createWorld(width, height, true);
-                }
-                else{
-                    Scanner scanner = new Scanner(System.in);
-                    System.out.println("Write width: ");
-                    short width = scanner.nextShort();
-                    System.out.println("Write height: ");
-                    short height = scanner.nextShort();
-                    scanner.close();
-                    createWorld(width, height, false);
-                }
-            } catch (IOException e) {
+        try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
+            String line = br.readLine();
+            if (line != null && line.startsWith("World:")) {
+                String[] worldInfo = line.split(" ");
+                short height = Short.parseShort(worldInfo[2].split(",")[0]);
+                short width = Short.parseShort(worldInfo[worldInfo.length - 1]);
+                createWorld(width, height, true);
+            }
+            else{
                 Scanner scanner = new Scanner(System.in);
                 System.out.println("Write width: ");
                 short width = scanner.nextShort();
                 System.out.println("Write height: ");
                 short height = scanner.nextShort();
                 scanner.close();
-
                 createWorld(width, height, false);
             }
+        } catch (IOException e) {
+            Scanner scanner = new Scanner(System.in);
+            System.out.println("Write width: ");
+            short width = scanner.nextShort();
+            System.out.println("Write height: ");
+            short height = scanner.nextShort();
+            scanner.close();
+
+            createWorld(width, height, false);
         }
+    }
 
     public void endGame(){
         dispose();

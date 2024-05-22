@@ -34,6 +34,7 @@ public class Antelope extends Animal{
                 ArrayList<Cell> neighbors = world.checkCellsAround(getPosition(), false);
                 for(short i = 0; i < neighbors.size(); ++i){
                     if(neighbors.get(i).org == null){
+                        setPosition(neighbors.get(i).getPosition(), false);
                         super.collision(neighbors.get(i).org);
                         return;
                     }

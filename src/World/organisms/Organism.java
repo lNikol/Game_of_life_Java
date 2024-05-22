@@ -1,11 +1,13 @@
 package World.organisms;
 import World.World;
+import World.Cell;
 import World.organisms.animals.*;
 import World.organisms.plants.*;
 
 import javax.swing.*;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 
 public abstract class Organism {
     protected short x = -1, y = -1, age = 0;
@@ -75,7 +77,6 @@ public abstract class Organism {
         return new short[]{this.y, this.x};
     }
 
-
     public World getWorld(){
         return this.world;
     }
@@ -103,5 +104,29 @@ public abstract class Organism {
                + Short.toString(this.x) + "), power: " + Short.toString(this.power) + ", initiative: "
                + Short.toString(this.initiative) + ", age: " + Short.toString(this.age) + "\n");
     }
-
+    public boolean checkReproduction(){
+        ArrayList<Cell> neighbors = world.checkCellsAround(this.getPosition(), false);
+        short i = 0, emptyPlace = -1;
+        for(short j = 0; j < neighbors.size(); ++j){
+            if(neighbors.get(j).org != null && neighbors.get(j).org.getClass() == this.getClass()){
+                ++i;
+            }
+            else if(neighbors.get(j).org == null){
+                emptyPlace = j;
+            }
+        }
+        if(i >= 2){
+            world.deleteOrganism(this);
+            return false;
+        }
+        else{
+            if(emptyPlace != -1){
+                world.setOrganism(neighbors.get(emptyPlace).getPosition(), this);
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+    }
 }

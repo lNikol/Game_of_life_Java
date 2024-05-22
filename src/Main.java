@@ -11,7 +11,7 @@ public class Main {
         while (game.getWorld().getHumanIsAlive()){
             System.out.println("Turn: " + i++);
             game.getWorld().takeATurn();
-            game.saveToLog();
+            //game.saveToLog();
         }
         game.endGame();
     }

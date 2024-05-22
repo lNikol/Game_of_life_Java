@@ -64,13 +64,15 @@ public abstract class Animal extends Organism {
             else{
                 if(org instanceof Antelope){
                    org.collision(this);
-                    if(!isAlive){
+                    if(isAlive){
+                        world.replaceOrganism(getPosition(), this);
+                        world.replaceOrganism(getOldPosition(), null);
+                        oldY = y;
+                        oldX = x;
+                    }
+                    else{
                         world.deleteOrganism(this);
                     }
-                    world.replaceOrganism(getOldPosition(), null);
-                    world.replaceOrganism(getPosition(), this);
-                    oldY = y;
-                    oldX = x;
                 }
                 else{
                     if (((Animal) org).reboundAttack(this)) {
@@ -111,13 +113,7 @@ public abstract class Animal extends Organism {
         if(age <= 2){
             return false;
         }
-        ArrayList<Cell> emptyPlace = world.checkCellsAround(other.getPosition(), true);
-        if(emptyPlace.getFirst().org != null && emptyPlace.getFirst().y == -1){
-            return false;
-        }
-        else{
-           return world.setOrganism(new short[] {emptyPlace.getFirst().y, emptyPlace.getFirst().x}, other);
-        }
+       return checkReproduction();
     }
     public abstract boolean reboundAttack(Organism org);
 }

@@ -46,7 +46,6 @@ public class CellClickListener extends MouseAdapter {
     public static void addOrganismToCell(short row, short col, Class<?> organism, boolean newOrg, World w) throws InvocationTargetException, InstantiationException, IllegalAccessException {
         if(w != null){
             Cell c = w.getMap().getCell(row, col);
-            System.out.println("test");
             if (c.org == null){
                 short[] pos = new short[]{row, col};
                 if(String.valueOf(organism.getPackage()).contains(".animals")){
@@ -55,7 +54,7 @@ public class CellClickListener extends MouseAdapter {
                 else if(String.valueOf(organism.getPackage()).contains(".plants")){
                     c.setBackground(Color.green);
                 }
-                if(newOrg) w.getMap().setOrganism(pos, (Organism) organism.getConstructors()[0].newInstance(pos, w));
+                if(newOrg) w.setOrganism(pos, (Organism) organism.getConstructors()[0].newInstance(pos, w));
                 JLabel label = new JLabel(organism.getSimpleName());
                 c.removeAll();
                 c.add(label);
@@ -63,6 +62,5 @@ public class CellClickListener extends MouseAdapter {
                 c.repaint();
             }
         }
-
     }
 }

@@ -1,9 +1,12 @@
 package World;
 
 import World.organisms.Organism;
+import World.organisms.animals.Animal;
 import World.organisms.animals.Human;
+import World.organisms.plants.Plant;
 
 import javax.swing.*;
+import java.awt.*;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
@@ -231,7 +234,6 @@ public class World {
                 organisms.get(i).setHasMoved(false);
             }
             updateOrganisms();
-            drawWorld();
             for(Organism org : organisms){
                 if(!org.getHasMoved() && org.getIsAlive()){
                     org.setHasMoved(true);
@@ -239,7 +241,7 @@ public class World {
                 }
                 System.out.println();
             }
-            drawWorld();
+            updateWorld();
         }
         else{
             System.out.println("You have died");
@@ -274,6 +276,28 @@ public class World {
             s+="\n";
         }
         System.out.println(s);
+    }
+
+    public void updateWorld(){
+        for(short i = 0; i < height; ++i) {
+            for(short j = 0; j < width; ++j) {
+                Cell c = getCell(new short[]{i, j});
+                c.setBackground(Color.white);
+                c.removeAll();
+                if(c.org != null) {
+                    JLabel label = new JLabel(c.org.getName());
+                    if(c.org instanceof Animal){
+                        c.setBackground(Color.red);
+                    }
+                    else if(c.org instanceof Plant){
+                        c.setBackground(Color.green);
+                    }
+                    c.add(label);
+                }
+                c.revalidate();
+                c.repaint();
+            }
+        }
     }
 
     public void replaceOrganism(short[] position, Organism newOrg){

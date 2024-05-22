@@ -16,12 +16,14 @@ public abstract class Plant extends Organism {
     @Override
     public void action(){
         if(super.age > 2){
-            // rand number [0-9] + 1
-            int rand = new Random().nextInt(10) + 1;
-            if(rand == 2){
-               if(world.setOrganism(world.newPosition(this, (short) 1), this)){
-                   System.out.print("Plant child was created");
-               }
+            if(checkReproduction()){
+                // rand number [0-9] + 1
+                int rand = new Random().nextInt(10) + 1;
+                if(rand == 1){
+                    if(world.setOrganism(world.newPosition(this, (short) 1), this)){
+                        System.out.print("Plant child was created");
+                    }
+                }
             }
         }
     }
