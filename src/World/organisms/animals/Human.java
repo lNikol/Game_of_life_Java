@@ -100,7 +100,7 @@ public class Human extends Animal{
                         else{
                             this.y -= 1;
                         }
-                        super.collision(world.getOrganism(this.getPosition()).org);
+                        super.collision(world.getCell(this.getPosition()).org);
                         world.setIsPlayerTurn(false);
                     }
                     else{
@@ -123,7 +123,7 @@ public class Human extends Animal{
                         else{
                             this.y += 1;
                         }
-                        super.collision(world.getOrganism(this.getPosition()).org);
+                        super.collision(world.getCell(this.getPosition()).org);
                         world.setIsPlayerTurn(false);
                     }
                     else{
@@ -146,7 +146,7 @@ public class Human extends Animal{
                         else{
                             this.x -= 1;
                         }
-                        super.collision(world.getOrganism(this.getPosition()).org);
+                        super.collision(world.getCell(this.getPosition()).org);
                         world.setIsPlayerTurn(false);
                     }
                     else{
@@ -169,7 +169,7 @@ public class Human extends Animal{
                         else{
                             this.x += 1;
                         }
-                        super.collision(world.getOrganism(this.getPosition()).org);
+                        super.collision(world.getCell(this.getPosition()).org);
                         world.setIsPlayerTurn(false);
                     }
                     else{
@@ -196,7 +196,7 @@ public class Human extends Animal{
                         else{
                             this.y -= 1;
                         }
-                        super.collision(world.getOrganism(this.getPosition()).org);
+                        super.collision(world.getCell(this.getPosition()).org);
                     }
                     else{
                         System.out.println("You cannot move to the top");
@@ -217,7 +217,7 @@ public class Human extends Animal{
                         else{
                             this.y += 1;
                         }
-                        super.collision(world.getOrganism(this.getPosition()).org);
+                        super.collision(world.getCell(this.getPosition()).org);
                     }
                     else{
                         System.out.println("You cannot move to the bottom");
@@ -238,7 +238,7 @@ public class Human extends Animal{
                         else{
                             this.x -= 1;
                         }
-                        super.collision(world.getOrganism(this.getPosition()).org);
+                        super.collision(world.getCell(this.getPosition()).org);
                     }
                     else{
                         System.out.println("You cannot move to the left");
@@ -259,7 +259,7 @@ public class Human extends Animal{
                         else{
                             this.x -= 1;
                         }
-                        super.collision(world.getOrganism(this.getPosition()).org);
+                        super.collision(world.getCell(this.getPosition()).org);
                     }
                     else{
                         System.out.println("You cannot move to the left");
@@ -280,7 +280,7 @@ public class Human extends Animal{
                         else{
                             this.y += 1;
                         }
-                        super.collision(world.getOrganism(this.getPosition()).org);
+                        super.collision(world.getCell(this.getPosition()).org);
                     }
                     else{
                         System.out.println("You cannot move to the bottom");
@@ -301,7 +301,7 @@ public class Human extends Animal{
                         else{
                             this.x += 1;
                         }
-                        super.collision(world.getOrganism(this.getPosition()).org);
+                        super.collision(world.getCell(this.getPosition()).org);
                     }
                     else{
                         System.out.println("You cannot move to the right");

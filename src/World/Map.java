@@ -3,13 +3,14 @@ package World;
 import World.organisms.Organism;
 import World.organisms.animals.Animal;
 
+import javax.swing.*;
+import java.awt.*;
 import java.util.ArrayList;
-import java.util.Vector;
 
 public class Map {
     ArrayList<ArrayList<Cell>> map = new ArrayList<ArrayList<Cell>>();
     private short width = -1, height = -1;
-    public Map(short width, short height, boolean isHex){
+    public Map(short width, short height, boolean isHex, World w){
         this.width = width;
         this.height = height;
         if(!isHex){
@@ -28,6 +29,11 @@ public class Map {
     public void setOrganism(short[] position, Organism organism){
        this.map.get(position[0]).get(position[1]).setOrganism(organism);
     }
+
+    public void setOrganism(short y, short x, Organism organism){
+        this.map.get(y).get(x).setOrganism(organism);
+    }
+
 
     public void replaceOrganism(short[] position, Organism newOrg){
         this.map.get(position[0]).get(position[1]).setOrganism(newOrg);
@@ -51,10 +57,10 @@ public class Map {
         }
         replaceOrganism(oldPos, null);
     }
-    public Cell getOrganism(short[] position){
+    public Cell getCell(short[] position){
         return this.map.get(position[0]).get(position[1]);
     }
-    public Cell getOrganism(short y, short x){
+    public Cell getCell(short y, short x){
         return this.map.get(y).get(x);
     }
 

@@ -2,7 +2,9 @@ package World;
 
 import World.organisms.Organism;
 
-public class Cell {
+import javax.swing.*;
+
+public class Cell extends JPanel {
     public Organism org = null;
     public short x = -1, y = -1;
     public Cell(short yy, short xx, Organism organism){

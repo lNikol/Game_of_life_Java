@@ -27,7 +27,7 @@ public class Fox extends Animal{
             if(pos.get(i) != null && pos.get(i).getPosition()[0] == -1){
                 return;
             }
-            Cell cell = world.getOrganism(pos.get(i).getPosition());
+            Cell cell = world.getCell(pos.get(i).getPosition());
             if(cell.org == null || (cell.org != null && power >= cell.org.getPower())){
                 setPosition(new short[] {cell.y, cell.x}, false);
                 super.collision(cell.org);

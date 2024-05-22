@@ -29,7 +29,7 @@ public class World {
         this.height = h;
         this.readFile = readFile;
         this.fileName = fileName;
-        this.map = new Map(width, height, isHex);
+        this.map = new Map(width, height, isHex, this);
         generateWorld();
     }
     public void generateWorld(){
@@ -40,7 +40,6 @@ public class World {
             else{
                 human = new Human((short) 0,(short) 0,this);
                 organisms.add(human);
-                organismsInGame.add(Organism.organisms[(short)(Organism.organisms.length-1)]);
                 this.map.setOrganism(new short[]{0,0}, human);
                 for(short i = 0; i < height; ++i){
                     for(short j = 0; j < width; ++j){
@@ -56,7 +55,7 @@ public class World {
                                     organismsInGame.add(org);
                                 }
                                 map.setOrganism(randPos, (Organism) org.getConstructors()[0].newInstance(randPos, this));
-                                organisms.add(map.getOrganism(randPos).org);
+                                organisms.add(map.getCell(randPos).org);
                             }
                             catch (Exception e){
                                 System.out.println(e);
@@ -74,7 +73,7 @@ public class World {
                                     organismsInGame.add(org);
                                 }
                                 map.setOrganism(randPos, (Organism) org.getConstructors()[0].newInstance(randPos, this));
-                                organisms.add(map.getOrganism(randPos).org);
+                                organisms.add(map.getCell(randPos).org);
                             }
                             catch (Exception e){
                                 System.out.println(e);
@@ -108,7 +107,7 @@ public class World {
         this.human.setKey(s);
     }
     public boolean setOrganism(short[] position, Organism org){
-        if(this.map.getOrganism(position).org == null){
+        if(this.map.getCell(position).org == null){
             Organism child = org.copy(position);
             children.add(child);
             this.map.setOrganism(position, child);
@@ -125,8 +124,8 @@ public class World {
     public boolean getIsPlayerTurn(){
         return this.isPlayerTurn;
     }
-    public Cell getOrganism(short[] position){
-        return map.getOrganism(position);
+    public Cell getCell(short[] position){
+        return map.getCell(position);
     }
     // zastanowić się nad tym jak to lepiej zrobić
     // bo tej metody będę używał w Antylopie, roślinach, zwierzętach itp.
@@ -140,7 +139,7 @@ public class World {
                     short newY = (short)(y + i);
                     short newX = (short)(x + j);
                     if ((newX < width && newX >= 0) && (newY < height && newY >= 0)) {
-                        Cell cell = map.getOrganism(new short[]{newY, newX});
+                        Cell cell = map.getCell(new short[]{newY, newX});
                         if (onlyOne && cell.org == null){
                             return new ArrayList<Cell>(Collections.singleton(cell));
                         }
@@ -186,7 +185,7 @@ public class World {
         short counter = 0;
         short x = (short)(random.nextInt(width));
         short y = (short)(random.nextInt(height));
-        while (map.getOrganism(y, x).org != null) {
+        while (map.getCell(y, x).org != null) {
             x = (short)(random.nextInt(width));
             y = (short)(random.nextInt(height));
             if(++counter >= 300){
@@ -222,6 +221,9 @@ public class World {
     }
 
     public void takeATurn(){
+        // naprawić wyświetlanie człowieka podczas tury
+        // gdzieś zostaje jego stary symbol
+
         humanIsAlive = (human == null) ? false : human.getIsAlive();
         if(humanIsAlive){
             for(short i = 0; i < organisms.size(); ++i){
@@ -248,7 +250,7 @@ public class World {
         String s = new String();
         for (short i = 0; i < height; ++i) {
             for (short j = 0; j < width; ++j) {
-                Organism org = this.map.getOrganism(i, j).org;
+                Organism org = this.map.getCell(i, j).org;
                 if(org == null){
                     s+=" . ";
                 }
@@ -603,6 +605,13 @@ public class World {
     public boolean getIsHex(){
         return isHex;
     }
+
+    public Map getMap(){
+        return this.map;
+    }
+    public ArrayList<Class<?>> getOrganismsInGame() {
+        return this.organismsInGame;
+    }
     public void setIsHex(boolean isH){
         this.isHex = isH;
     }
@@ -639,14 +648,10 @@ public class World {
                                 }
                                 else{
                                     map.setOrganism(pos, (Organism) organism.getConstructors()[1].newInstance(numbers[0], numbers[1], numbers[2], numbers[3], numbers[4], this));
-                                    organisms.add(map.getOrganism(pos).org);
+                                    organisms.add(map.getCell(pos).org);
                                 }
 
-                            } catch (InstantiationException e) {
-                                throw new RuntimeException(e);
-                            } catch (IllegalAccessException e) {
-                                throw new RuntimeException(e);
-                            } catch (InvocationTargetException e) {
+                            } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
                                 throw new RuntimeException(e);
                             }
                             if(!organismsInGame.contains(organism)){

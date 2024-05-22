@@ -24,8 +24,7 @@ public abstract class Organism {
             Fox.class,
             Sheep.class,
             Turtle.class,
-            Antelope.class,
-            Human.class,
+            Antelope.class
     };
     public Organism(String image, String name, short power, short initiative,
                     short y, short x, World w) {
@@ -56,6 +55,9 @@ public abstract class Organism {
     public abstract Organism copy(short[] position);
     public void drawOrganism(){
         //world.map.setOrganism(this.getPosition());
+    }
+    public String getName(){
+        return this.name;
     }
     public String getImage(){
         return this.image;

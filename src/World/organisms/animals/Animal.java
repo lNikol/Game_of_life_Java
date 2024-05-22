@@ -48,7 +48,7 @@ public abstract class Animal extends Organism {
         System.out.print("Before: " + x + " " + y);
         move();
         System.out.print("after move: " + x + " " + y);
-        collision(world.getOrganism(getPosition()).org);
+        collision(world.getCell(getPosition()).org);
     }
 
     @Override
