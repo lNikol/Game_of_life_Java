@@ -27,12 +27,13 @@ public class World {
     boolean humanIsAlive = true;
     boolean isPlayerTurn = false;
     String fileName;
-    public World(short w, short h, boolean readFile, String fileName){
+    public World(short w, short h, boolean readFile, String fileName, boolean isH){
         this.width = w;
         this.height = h;
         this.readFile = readFile;
         this.fileName = fileName;
-        this.map = new Map(width, height, isHex, this);
+        this.isHex = isH;
+        this.map = new Map(width, height, this);
         generateWorld();
     }
     public void generateWorld(){
@@ -87,13 +88,52 @@ public class World {
             }
         }
         else{
+            width = height;
             if(readFile){
                 readFromFile();
             }
             else{
+                human = new Human((short) 0,(short) 0,this);
+                organisms.add(human);
+                this.map.setOrganism(new short[]{0,0}, human);
                 for(short i = 0; i < height; ++i){
-                    for(short j = 0; j < width; ++j){
-
+                    for(short j = 0; j < height; ++j){
+                        if (j % 4 == 1) {
+                            // plant generate
+                            short[] randPos = randomPosition();
+                            if(randPos[0] == -1){
+                                continue;
+                            }
+                            try{
+                                Class<?> org = Organism.organisms[(i + j) % 5];
+                                if(!organismsInGame.contains(org)){
+                                    organismsInGame.add(org);
+                                }
+                                map.setOrganism(randPos, (Organism) org.getConstructors()[0].newInstance(randPos, this));
+                                organisms.add(map.getCell(randPos).org);
+                            }
+                            catch (Exception e){
+                                System.out.println(e);
+                            }
+                        }
+                        else if (j % 4 == 0) {
+                            // animal generate
+                            short[] randPos = randomPosition();
+                            if(randPos[0] == -1){
+                                continue;
+                            }
+                            try{
+                                Class<?> org = Organism.organisms[(i + j) % 5 + 5];
+                                if(!organismsInGame.contains(org)){
+                                    organismsInGame.add(org);
+                                }
+                                map.setOrganism(randPos, (Organism) org.getConstructors()[0].newInstance(randPos, this));
+                                organisms.add(map.getCell(randPos).org);
+                            }
+                            catch (Exception e){
+                                System.out.println(e);
+                            }
+                        }
                     }
                 }
             }

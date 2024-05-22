@@ -8,11 +8,11 @@ public class Main {
         Game game = new Game();
         game.setVisible(true);
         int i = 0;
-        while (game.getWorld().getHumanIsAlive()){
+       /* while (game.getWorld().getHumanIsAlive()){
             System.out.println("Turn: " + i++);
             game.getWorld().takeATurn();
             //game.saveToLog();
         }
-        game.endGame();
+        game.endGame();*/
     }
 }

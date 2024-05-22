@@ -10,33 +10,30 @@ import java.util.ArrayList;
 public class Map {
     ArrayList<ArrayList<Cell>> map = new ArrayList<ArrayList<Cell>>();
     private short width = -1, height = -1;
-    public Map(short width, short height, boolean isHex, World w){
+    boolean isHex = false;
+    public Map(short width, short height, World w){
+        this.isHex = w.getIsHex();
         this.width = width;
         this.height = height;
-        if(!isHex){
-            for(short i = 0; i < height; ++i){
-                ArrayList<Cell> row = new ArrayList<Cell>(height);
-                for(short j = 0; j < width; ++j){
-                    row.add(new Cell(i, j));
-                }
-                this.map.add(row);
+        for(short i = 0; i < height; ++i){
+            ArrayList<Cell> row = new ArrayList<Cell>(height);
+            for(short j = 0; j < width; ++j){
+                row.add(new Cell(i, j));
             }
-        }
-        else{
-
+            this.map.add(row);
         }
     }
     public void setOrganism(short[] position, Organism organism){
-       this.map.get(position[0]).get(position[1]).setOrganism(organism);
+       this.map.get(position[0]).get(position[1]).setOrganism(organism, isHex);
     }
 
     public void setOrganism(short y, short x, Organism organism){
-        this.map.get(y).get(x).setOrganism(organism);
+        this.map.get(y).get(x).setOrganism(organism, isHex);
     }
 
 
     public void replaceOrganism(short[] position, Organism newOrg){
-        this.map.get(position[0]).get(position[1]).setOrganism(newOrg);
+        this.map.get(position[0]).get(position[1]).setOrganism(newOrg, isHex);
     }
 
     public void deleteOrganism(Organism oldOrg){

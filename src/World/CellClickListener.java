@@ -49,10 +49,20 @@ public class CellClickListener extends MouseAdapter {
             if (c.org == null){
                 short[] pos = new short[]{row, col};
                 if(String.valueOf(organism.getPackage()).contains(".animals")){
-                    c.setBackground(Color.red);
+                    if(c.isHex){
+                        c.setNewColor(Color.RED);
+                    }
+                    else {
+                        c.setBackground(Color.red);
+                    }
                 }
                 else if(String.valueOf(organism.getPackage()).contains(".plants")){
-                    c.setBackground(Color.green);
+                    if(c.isHex){
+                        c.setNewColor(Color.green);
+                    }
+                    else {
+                        c.setBackground(Color.green);
+                    }
                 }
                 if(newOrg) w.setOrganism(pos, (Organism) organism.getConstructors()[0].newInstance(pos, w));
                 JLabel label = new JLabel(organism.getSimpleName());
