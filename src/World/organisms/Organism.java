@@ -26,7 +26,8 @@ public abstract class Organism {
             Fox.class,
             Sheep.class,
             Turtle.class,
-            Antelope.class
+            Antelope.class,
+            Human.class
     };
     public Organism(String image, String name, short power, short initiative,
                     short y, short x, World w) {

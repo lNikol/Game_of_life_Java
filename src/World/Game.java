@@ -21,12 +21,14 @@ import World.organisms.plants.Plant;
 
 public class Game extends JFrame {
     private FileService fs;
+    int[] dane;
     private final int radius = 30; // Promień heksagonu
     private World w;
     String fileName = "log.log";
-    public Game() throws IOException, InvocationTargetException, InstantiationException, IllegalAccessException {
+    public Game(int[] dane) throws IOException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        this.dane = dane;
         setTitle("Game of life");
-        setSize(500, 500);
+        setSize(650, 650);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         addKeyListener(new KeyAdapter(this));
         readLogFile();
@@ -50,17 +52,42 @@ public class Game extends JFrame {
                         c.add(label);
                     }
                     add(c);
+                    requestFocusInWindow();
                 }
             }
-        /*JButton button2 = new JButton("Pobierz grę");
-        button2.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                w.saveToLog();
-            }
-        });
-        add(button2);*/
-        requestFocusInWindow();
+
+
+
+            JButton button2 = new JButton("Zacznij turę");
+            button2.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if(w.getKey() != ' '){
+                        System.out.println("\n\n\n\nTurn: " + KeyAdapter.i++);
+                        w.takeATurn();
+                        w.setKey(' ');
+                        w.setKeyPressed(false);
+                        requestFocusInWindow();
+                    }
+                }
+            });
+            add(button2);
+            requestFocusInWindow();
+
+            JButton button = new JButton("Pobierz grę");
+            button.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    try {
+                        saveToLog();
+                        requestFocusInWindow();
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
+            });
+            add(button);
+            requestFocusInWindow();
         }
         else{
             setLayout(new GridBagLayout());
@@ -103,17 +130,12 @@ public class Game extends JFrame {
             button2.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    System.out.println("getKey: "+ w.getKey());
                     if(w.getKey() != ' '){
-                        System.out.println("Turn: " + KeyAdapter.i++);
-
+                        System.out.println("\n\n\n\nTurn: " + KeyAdapter.i++);
                         w.takeATurn();
                         w.setKey(' ');
                         w.setKeyPressed(false);
                         requestFocusInWindow();
-                    }
-                    else{
-                        System.out.println("getKeyPressed: "+ w.getKeyPressed());
                     }
                 }
             });
@@ -163,6 +185,7 @@ public class Game extends JFrame {
                 if(buttons.contains(String.valueOf(e.getKeyChar()))){
                     if(e.getKeyChar() == 'o'){
                         w.human.setKey('o');
+                        requestFocusInWindow();
                     }
                     else {
                         if(w.getHumanIsAlive()){
@@ -188,6 +211,7 @@ public class Game extends JFrame {
 
     public void saveToLog() throws IOException {
         fs.writeToLog(w.saveToLog(), w.getWidth(), w.getHeight());
+        System.out.println("Gra została zapisana do " + fileName);
     }
 
     public void readLogFile() throws IOException {
@@ -197,29 +221,13 @@ public class Game extends JFrame {
                 String[] worldInfo = line.split(" ");
                 short height = Short.parseShort(worldInfo[2].split(",")[0]);
                 short width = Short.parseShort(worldInfo[worldInfo.length - 1]);
-                createWorld(width, height, true, false);
+                createWorld(width, height, true, dane[2] == 1);
             }
             else{
-                Scanner scanner = new Scanner(System.in);
-                System.out.println("Write width: ");
-                short width = scanner.nextShort();
-                System.out.println("Write height: ");
-                short height = scanner.nextShort();
-                System.out.println("Write isHex: ");
-                boolean isHex = scanner.nextBoolean();
-                scanner.close();
-                createWorld(width, height, false, isHex);
+                createWorld((short)dane[0], (short)dane[1], false, dane[2] == 1 );
             }
         } catch (IOException e) {
-            Scanner scanner = new Scanner(System.in);
-            System.out.println("Write width: ");
-            short width = scanner.nextShort();
-            System.out.println("Write height: ");
-            short height = scanner.nextShort();
-            System.out.println("Write isHex: ");
-            boolean isHex = scanner.nextBoolean();
-            scanner.close();
-            createWorld(width, height, false, isHex);
+            createWorld((short)dane[0], (short)dane[1], false, dane[2] == 1 );
         }
     }
 

@@ -44,10 +44,9 @@ public abstract class Animal extends Organism {
 
     @Override
     public void action(){
-        System.out.print("Action in animal");
-        System.out.print("Before: " + x + " " + y);
+        System.out.print(name + ": (" + x + ", " + y + ") -> ");
         move();
-        System.out.print("after move: " + x + " " + y);
+        System.out.println("(" + x + ", " + y + ") ");
         collision(world.getCell(getPosition()).org);
     }
 

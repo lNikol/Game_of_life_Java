@@ -12,11 +12,11 @@ public class Human extends Animal{
 
     public Human(short y, short x, World w){
         super("Human.png", "Human", (short)5, (short)4, y, x, w);
-        System.out.print("Human (" + x + "," + y + ") was created\n");
+        System.out.println("Human (" + x + "," + y + ") was created\n");
     }
     public Human(short y, short x, short power, short initiative, short age, World w) {
         super("Human.png", "Human", power, initiative, y, x, age, w);
-        System.out.print("Human (" + x + "," + y + ") was created\n");
+        System.out.println("Human (" + x + "," + y + ") was created\n");
     }
     @Override
     public Organism copy(short[] position){
@@ -25,7 +25,7 @@ public class Human extends Animal{
 
     @Override
     public void action(){
-        System.out.println("Your turn");
+        System.out.println("\n\nYour turn\n\n");
         moveSystem();
     }
 

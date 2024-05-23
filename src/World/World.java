@@ -109,7 +109,7 @@ public class World {
             return true;
         }
         else{
-            System.out.print("setOrganism in World: Cannot set organism, the place by (y,x) " + position[0] + ", " + position[1]+" isn't null");
+            System.out.println("setOrganism in World: Cannot set organism, the place by (y,x) " + position[0] + ", " + position[1]+" isn't null");
             return false;
         }
     }
@@ -126,7 +126,7 @@ public class World {
             return true;
         }
         else{
-            System.out.print("setOrganism in World: Cannot set organism, the place by (y,x) " + position[0] + ", " + position[1]+" isn't null");
+            //System.out.println("setOrganism in World: Cannot set organism, the place by (y,x) " + position[0] + ", " + position[1]+" isn't null");
             return false;
         }
     }
@@ -257,12 +257,11 @@ public class World {
                     org.setHasMoved(true);
                     org.action();
                 }
-                System.out.println();
                 updateWorld();
             }
         }
         else{
-            System.out.println("You have died");
+            System.out.println("\n\nYou have died\n\n");
         }
     }
 
@@ -893,6 +892,7 @@ public class World {
             }
         }
         return new short[]{y,x};
+
     }
 
     public short getWidth(){
@@ -951,15 +951,16 @@ public class World {
                                     organisms.add(this.human);
                                 }
                                 else{
-                                    map.setOrganism(pos, (Organism) organism.getConstructors()[1].newInstance(numbers[0], numbers[1], numbers[2], numbers[3], numbers[4], this));
+                                    setOrganism(pos, (Organism) organism.getConstructors()[1].newInstance(numbers[0], numbers[1], numbers[2], numbers[3], numbers[4], this));
                                     organisms.add(map.getCell(pos).org);
+
+                                    if(!organismsInGame.contains(organism)){
+                                        organismsInGame.add(organism);
+                                    }
                                 }
 
                             } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
                                 throw new RuntimeException(e);
-                            }
-                            if(!organismsInGame.contains(organism)){
-                                organismsInGame.add(organism);
                             }
                         }
                     }

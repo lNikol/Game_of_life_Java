@@ -9,11 +9,11 @@ import java.util.ArrayList;
 public class Antelope extends Animal{
     public Antelope(short[] position, World w){
         super("Antelope.png", "Antelope", (short)4, (short)4, position[0], position[1], w);
-        System.out.print("Antelope (" + x + "," + y + ") was created\n");
+        System.out.println("Antelope (" + x + "," + y + ") was created\n");
     }
     public Antelope(short y, short x, short power, short initiative, short age, World w) {
         super("Antelope.png", "Antelope", power, initiative, y, x, age, w);
-        System.out.print("Antelope (" + x + "," + y + ") was created\n");
+        System.out.println("Antelope (" + x + "," + y + ") was created\n");
     }
 
     @Override

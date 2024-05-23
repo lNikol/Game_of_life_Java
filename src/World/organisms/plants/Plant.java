@@ -20,9 +20,7 @@ public abstract class Plant extends Organism {
                 // rand number [0-9] + 1
                 int rand = new Random().nextInt(10) + 1;
                 if(rand == 1){
-                    if(world.setOrganism(world.newPosition(this, (short) 1), this)){
-                        System.out.print("Plant child was created");
-                    }
+                    world.setOrganism(world.newPosition(this, (short) 1), this);
                 }
             }
         }

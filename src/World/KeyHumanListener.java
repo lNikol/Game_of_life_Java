@@ -26,27 +26,8 @@ public class KeyHumanListener implements KeyListener {
 
     @Override
     public void keyReleased(KeyEvent e) {
-        System.out.println(isPlayerTurn);
         if(isPlayerTurn){
-            int keyCode = e.getKeyCode();
-            switch (keyCode) {
-                case KeyEvent.VK_W:
-                    System.out.println("w");
-                    break;
-                case KeyEvent.VK_A:
-                    System.out.println("a");
-                    break;
-                case KeyEvent.VK_S:
-                    System.out.println("s");
-                    break;
-                case KeyEvent.VK_D:
-                    System.out.println("d");
-                    break;
-            }
-            System.out.println("Here");
-            System.out.println(e.getKeyChar());
             human.setKey(e.getKeyChar());
-
         }
 
     }

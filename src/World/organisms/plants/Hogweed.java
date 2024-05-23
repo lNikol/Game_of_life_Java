@@ -10,11 +10,11 @@ import java.util.ArrayList;
 public class Hogweed extends Plant{
     public Hogweed(short[] position, World w){
         super("Hogweed.png", "Hogweed", (short)10, (short)0, position[0], position[1], w);
-        System.out.print("Hogweed (" + x + "," + y + ") was created\n");
+        System.out.println("Hogweed (" + x + "," + y + ") was created\n");
     }
     public Hogweed(short y, short x, short power, short initiative, short age, World w) {
         super("Hogweed.png", "Hogweed", power, initiative, y, x, age, w);
-        System.out.print("Hogweed (" + x + "," + y + ") was created\n");
+        System.out.println("Hogweed (" + x + "," + y + ") was created\n");
     }
     @Override
     public Organism copy(short[] position){
@@ -33,6 +33,7 @@ public class Hogweed extends Plant{
 
     @Override
     public void collision(Organism org){
+        System.out.println(name + ": Organism ("+org.getName()+") ate me, and I kill it");
         world.deleteOrganism(org);
         world.deleteOrganism(this);
     }

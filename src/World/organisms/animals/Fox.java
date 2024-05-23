@@ -8,11 +8,11 @@ import java.util.ArrayList;
 public class Fox extends Animal{
     public Fox(short[] position, World w){
         super("Fox.png", "Fox", (short)3, (short)7, position[0], position[1], w);
-        System.out.print("Fox (" + x + "," + y + ") was created\n");
+        System.out.println("Fox (" + x + "," + y + ") was created\n");
     }
     public Fox(short y, short x, short power, short initiative, short age, World w) {
         super("Fox.png", "Fox", power, initiative, y, x, age, w);
-        System.out.print("Fox (" + x + "," + y + ") was created\n");
+        System.out.println("Fox (" + x + "," + y + ") was created\n");
     }
     @Override
     public Organism copy(short[] position){
