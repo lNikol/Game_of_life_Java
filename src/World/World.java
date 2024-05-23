@@ -37,109 +37,58 @@ public class World {
         generateWorld();
     }
     public void generateWorld(){
-        if(!isHex){
-            if(readFile){
-                readFromFile();
-            }
-            else{
-                human = new Human((short) 0,(short) 0,this);
-                organisms.add(human);
-                this.map.setOrganism(new short[]{0,0}, human);
-                for(short i = 0; i < height; ++i){
-                    for(short j = 0; j < width; ++j){
-                        if (j % 4 == 1) {
-                            // plant generate
-                            short[] randPos = randomPosition();
-                            if(randPos[0] == -1){
-                                continue;
-                            }
-                            try{
-                                Class<?> org = Organism.organisms[(i + j) % 5];
-                                if(!organismsInGame.contains(org)){
-                                    organismsInGame.add(org);
-                                }
-                                map.setOrganism(randPos, (Organism) org.getConstructors()[0].newInstance(randPos, this));
-                                organisms.add(map.getCell(randPos).org);
-                            }
-                            catch (Exception e){
-                                System.out.println(e);
-                            }
-                        }
-                       else if (j % 4 == 0) {
-                            // animal generate
-                            short[] randPos = randomPosition();
-                            if(randPos[0] == -1){
-                                continue;
-                            }
-                            try{
-                                Class<?> org = Organism.organisms[(i + j) % 5 + 5];
-                                if(!organismsInGame.contains(org)){
-                                    organismsInGame.add(org);
-                                }
-                                map.setOrganism(randPos, (Organism) org.getConstructors()[0].newInstance(randPos, this));
-                                organisms.add(map.getCell(randPos).org);
-                            }
-                            catch (Exception e){
-                                System.out.println(e);
-                            }
-                        }
-                    }
-                }
-            }
+        if(readFile){
+            readFromFile();
         }
         else{
-            width = height;
-            if(readFile){
-                readFromFile();
+            if(isHex){
+                width = height;
             }
-            else{
-                human = new Human((short) 0,(short) 0,this);
-                organisms.add(human);
-                this.map.setOrganism(new short[]{0,0}, human);
-                for(short i = 0; i < height; ++i){
-                    for(short j = 0; j < height; ++j){
-                        if (j % 4 == 1) {
-                            // plant generate
-                            short[] randPos = randomPosition();
-                            if(randPos[0] == -1){
-                                continue;
-                            }
-                            try{
-                                Class<?> org = Organism.organisms[(i + j) % 5];
-                                if(!organismsInGame.contains(org)){
-                                    organismsInGame.add(org);
-                                }
-                                map.setOrganism(randPos, (Organism) org.getConstructors()[0].newInstance(randPos, this));
-                                organisms.add(map.getCell(randPos).org);
-                            }
-                            catch (Exception e){
-                                System.out.println(e);
-                            }
+            human = new Human((short) 0,(short) 0,this);
+            organisms.add(human);
+            this.map.setOrganism(new short[]{0,0}, human);
+            for(short i = 0; i < height; ++i){
+                for(short j = 0; j < width; ++j){
+                    if (j % 4 == 1) {
+                        // plant generate
+                        short[] randPos = randomPosition();
+                        if(randPos[0] == -1){
+                            continue;
                         }
-                        else if (j % 4 == 0) {
-                            // animal generate
-                            short[] randPos = randomPosition();
-                            if(randPos[0] == -1){
-                                continue;
+                        try{
+                            Class<?> org = Organism.organisms[(i + j) % 5];
+                            if(!organismsInGame.contains(org)){
+                                organismsInGame.add(org);
                             }
-                            try{
-                                Class<?> org = Organism.organisms[(i + j) % 5 + 5];
-                                if(!organismsInGame.contains(org)){
-                                    organismsInGame.add(org);
-                                }
-                                map.setOrganism(randPos, (Organism) org.getConstructors()[0].newInstance(randPos, this));
-                                organisms.add(map.getCell(randPos).org);
+                            map.setOrganism(randPos, (Organism) org.getConstructors()[0].newInstance(randPos, this));
+                            organisms.add(map.getCell(randPos).org);
+                        }
+                        catch (Exception e){
+                            System.out.println(e);
+                        }
+                    }
+                    else if (j % 4 == 0) {
+                        // animal generate
+                        short[] randPos = randomPosition();
+                        if(randPos[0] == -1){
+                            continue;
+                        }
+                        try{
+                            Class<?> org = Organism.organisms[(i + j) % 5 + 5];
+                            if(!organismsInGame.contains(org)){
+                                organismsInGame.add(org);
                             }
-                            catch (Exception e){
-                                System.out.println(e);
-                            }
+                            map.setOrganism(randPos, (Organism) org.getConstructors()[0].newInstance(randPos, this));
+                            organisms.add(map.getCell(randPos).org);
+                        }
+                        catch (Exception e) {
+                            System.out.println(e);
                         }
                     }
                 }
             }
         }
     }
-
     public boolean getKeyPressed(){
         return keyPressed;
     }
@@ -152,6 +101,23 @@ public class World {
     public boolean setOrganism(short[] position, Organism org){
         if(this.map.getCell(position).org == null){
             Organism child = org.copy(position);
+            children.add(child);
+            this.map.setOrganism(position, child);
+            return true;
+        }
+        else{
+            System.out.print("setOrganism in World: Cannot set organism, the place by (y,x) " + position[0] + ", " + position[1]+" isn't null");
+            return false;
+        }
+    }
+    public boolean setOrganism(short[] position, Class<?> org){
+        if(this.map.getCell(position).org == null){
+            Organism child = null;
+            try {
+                child = (Organism) org.getConstructors()[0].newInstance(position, this);
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+                throw new RuntimeException(e);
+            }
             children.add(child);
             this.map.setOrganism(position, child);
             return true;
@@ -202,25 +168,34 @@ public class World {
             return neighbors;
         }
         else{
-            short[] dLines = { -1, 0, 1, 1, 0, -1 };
-            short[] dPoses = { -1, -1, 0, 1, 1, 0 };
+            // a d q w e z x
+            short[] dLines = { 0, 0, 0, -1, -1, 1, 1, 1};
+            short[] dPoses = { -1, 1, -1, 1, 2, -2, -1, 0};
 
-            for (short i = 0; i < 6; ++i) {
-                short newRow = (short)(y + dLines[i]);
-                short newCol = (short)(x + dPoses[i]);
-                if (newRow >= 0 && newRow < height && newCol >= 0 && newCol < height) {
-                    if(true){
-                        break;
+            for (short i = 0; i < 8; ++i) {
+                short newY = (short)(y + dLines[i]);
+                short newX = (short)(x + dPoses[i]);
+                if (newY >= 0 && newY < height && newX >= 0 && newX < height) {
+                    if ((newX < width && newX >= 0) && (newY < height && newY >= 0)) {
+                        Cell cell = map.getCell(new short[]{newY, newX});
+                        if (onlyOne && cell.org == null){
+                            return new ArrayList<Cell>(Collections.singleton(cell));
+                        }
+                        neighbors.add(cell);
                     }
                 }
             }
-            /*if (onlyOne){
-                return new ArrayList<short[]>(Collections.singleton(neighbors.getFirst()));
+            if (onlyOne){
+                if (!neighbors.isEmpty()){
+                    return new ArrayList<Cell>(Collections.singleton(neighbors.getFirst()));
+                }
+                else{
+                    neighbors.add(new Cell((short) -1,(short) -1,null));
+                    return neighbors;
+                }
             }
-            return neighbors;*/
+            return neighbors;
         }
-        neighbors.add(new Cell((short) -1,(short) -1,null));
-        return neighbors;
     }
 
     public short[] randomPosition(){
@@ -280,8 +255,8 @@ public class World {
                     org.action();
                 }
                 System.out.println();
+                updateWorld();
             }
-            updateWorld();
         }
         else{
             System.out.println("You have died");
@@ -322,20 +297,35 @@ public class World {
         for(short i = 0; i < height; ++i) {
             for(short j = 0; j < width; ++j) {
                 Cell c = getCell(new short[]{i, j});
-                c.setBackground(Color.white);
+                if(c.isHex){
+                    c.setNewColor(Color.white);
+                }
+                else{
+                    c.setBackground(Color.white);
+                }
                 c.removeAll();
                 if(c.org != null) {
                     JLabel label = new JLabel(c.org.getName());
                     if(c.org instanceof Animal){
-                        c.setBackground(Color.red);
+                        if(c.isHex){
+                            c.setNewColor(Color.red);
+                        }
+                        else{
+                            c.setBackground(Color.red);
+                        }
                     }
                     else if(c.org instanceof Plant){
-                        c.setBackground(Color.green);
+                        if(c.isHex){
+                            c.setNewColor(Color.green);
+                        }
+                        else{
+                            c.setBackground(Color.green);
+                        }
                     }
                     c.add(label);
                 }
-                c.revalidate();
                 c.repaint();
+                c.revalidate();
             }
         }
     }
@@ -362,16 +352,12 @@ public class World {
         if(!isHex){
             if (y == 0) {
                 if (x == 0) {
-                    switch (new Random().nextInt(3) + 1) {
-                        case 1: { // down
-                            y += dist;
-                            break;
-                        }
-                        case 2: { // right
+                    switch (new Random().nextInt(2) + 1) {
+                        case 1: { // right
                             x += dist;
                             break;
                         }
-                        case 3: { // right-down
+                        case 2: { // right-down
                             x += dist;
                             y += dist;
                             break;
@@ -379,7 +365,7 @@ public class World {
                     }
                 }
                 else if (x == w) {
-                    switch (new Random().nextInt(3) + 1) {
+                    switch (new Random().nextInt(4) + 1) {
                         case 1: { // down
                             y += dist;
                             break;
@@ -650,7 +636,258 @@ public class World {
             }
         }
         else{
-
+            if (y == 0) {
+                if (x == 0)     {
+                    switch (new Random().nextInt(2) + 1) {
+                        case 1: { // down
+                            y += dist;
+                            break;
+                        }
+                        case 2: { // right
+                            x += dist;
+                            break;
+                        }
+                    }
+                }
+                else if (x == w) {
+                    switch (new Random().nextInt(4) + 1) {
+                        case 1: { // down
+                            y += 1;
+                            break;
+                        }
+                        case 2: { // left
+                            x -= 1;
+                            break;
+                        }
+                        case 3: { // left-down-down
+                            if(dist == 2){
+                                x -= 1;
+                                y += 1;
+                            }
+                            break;
+                        }
+                        case 4: { // left-down-down
+                            if(dist == 2){
+                                x -= 2;
+                                y += 1;
+                            }
+                            break;
+                        }
+                    }
+                }
+                else {
+                    switch (new Random().nextInt(5) + 1) {
+                        case 1: { // right
+                            x += 1;
+                            break;
+                        }
+                        case 2: { // left
+                            x -= 1;
+                            break;
+                        }
+                        case 3: { // down
+                            y += 1;
+                            break;
+                        }
+                        case 4: { // down-down
+                            if(dist == 2){
+                                x -= 1;
+                                y += 1;
+                            }
+                            break;
+                        }
+                        case 5: { // down-down-left
+                            if(dist == 2){
+                                x-=(x-2>=0)?2:1;
+                                y+=1;
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+            else if (y == h) {
+                if (x == 0) {
+                    switch (new Random().nextInt(4) + 1) {
+                        case 1: { // top
+                            y -= dist;
+                            break;
+                        }
+                        case 2: { // right
+                            x += dist;
+                            break;
+                        }
+                        case 3: { // top-top
+                            if(dist == 2){
+                                x += 1;
+                                y += 1;
+                            }
+                            break;
+                        }
+                        case 4: { // left-top-top
+                            if(dist == 2){
+                                x += 2;
+                                y -= 1;
+                            }
+                            break;
+                        }
+                    }
+                }
+                else if (x == w) {
+                    switch (new Random().nextInt(2) + 1) {
+                        case 1: { // top
+                            y -= 1;
+                            break;
+                        }
+                        case 2: { // left
+                            x -= 1;
+                            break;
+                        }
+                    }
+                }
+                else {
+                    switch (new Random().nextInt(5) + 1) {
+                        case 1: { // top 3
+                            y -= 1;
+                            break;
+                        }
+                        case 2: { // left 2
+                            x-=1;
+                            break;
+                        }
+                        case 3: { // right 1
+                            x+=1;
+                            break;
+                        }
+                        case 4: { // top-top 4
+                            if(dist == 2){
+                                x+=1;
+                                y-=1;
+                            }
+                            break;
+                        }
+                        case 5: { // right-top-top 5
+                            if(dist == 2){
+                                x+=2;
+                                y-=1;
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+            else if (x == w && (y >= 1 && y < h)) {
+                switch (new Random().nextInt(5) + 1) {
+                    case 1: { // top 1
+                        y -= 1;
+                        break;
+                    }
+                    case 2: { // down 2
+                        y += 1;
+                        break;
+                    }
+                    case 3: { // left 3
+                        x -= dist;
+                        break;
+                    }
+                    case 4: { // down-down 4
+                        if(dist == 2){
+                            x-=1;
+                            y+=1;
+                        }
+                        break;
+                    }
+                    case 5: { // left-down
+                        if(dist == 2){
+                            x-=2;
+                            y+=1;
+                        }
+                        break;
+                    }
+                }
+            }
+            else if (x == 0 && (y >= 1 && y < h)) {
+                switch (new Random().nextInt(5) + 1) {
+                    case 1: { // down 3
+                        y += 1;
+                        break;
+                    }
+                    case 2: { // right 1
+                        x += 1;
+                        break;
+                    }
+                    case 3: { // top 2
+                        y-=1;
+                        break;
+                    }
+                    case 4: { // top-top 4
+                        if(dist == 2){
+                            x+=1;
+                            y-=1;
+                        }
+                        break;
+                    }
+                    case 5: { // right-down
+                        if(dist == 2){
+                            x+=2;
+                            y-=1;
+                        }
+                        break;
+                    }
+                }
+            }
+            else {
+                switch (new Random().nextInt(8) + 1) {
+                    case 1: { // down 1
+                        y += 1;
+                        break;
+                    }
+                    case 2: { // top 2
+                        y -= 1;
+                        break;
+                    }
+                    case 3: { // right 3
+                        x += 1;
+                        break;
+                    }
+                    case 4: { // left 4
+                        x -= 1;
+                        break;
+                    }
+                    case 5: { // down-down 5
+                        if(dist == 2){
+                            x-=1;
+                            y+=1;
+                        }
+                        break;
+                    }
+                    case 6: { // left-down 6
+                        if(dist == 2){
+                            x-=(x-2>=0)?2:1;
+                            y+=1;
+                        }
+                        break;
+                    }
+                    case 7: { // right-top 7
+                        if(dist == 2){
+                            x+=(x+2<=h)?2:1;
+                            y-=1;
+                        }
+                        else{
+                            x+=1;
+                            y-=1;
+                        }
+                        break;
+                    }
+                    case 8: { // top-top 8
+                        if(dist == 2){
+                            x+=1;
+                            y-=1;
+                        }
+                        break;
+                    }
+                }
+            }
         }
         return new short[]{y,x};
     }

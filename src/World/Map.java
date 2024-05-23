@@ -18,7 +18,7 @@ public class Map {
         for(short i = 0; i < height; ++i){
             ArrayList<Cell> row = new ArrayList<Cell>(height);
             for(short j = 0; j < width; ++j){
-                row.add(new Cell(i, j));
+                row.add(new Cell(i, j, isHex));
             }
             this.map.add(row);
         }
@@ -26,11 +26,6 @@ public class Map {
     public void setOrganism(short[] position, Organism organism){
        this.map.get(position[0]).get(position[1]).setOrganism(organism, isHex);
     }
-
-    public void setOrganism(short y, short x, Organism organism){
-        this.map.get(y).get(x).setOrganism(organism, isHex);
-    }
-
 
     public void replaceOrganism(short[] position, Organism newOrg){
         this.map.get(position[0]).get(position[1]).setOrganism(newOrg, isHex);
@@ -60,5 +55,4 @@ public class Map {
     public Cell getCell(short y, short x){
         return this.map.get(y).get(x);
     }
-
 }

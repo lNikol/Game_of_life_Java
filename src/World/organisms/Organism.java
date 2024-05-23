@@ -120,7 +120,7 @@ public abstract class Organism {
             return false;
         }
         else{
-            if(emptyPlace != -1){
+            if(emptyPlace != -1 && neighbors.get(emptyPlace).getPosition()[0] != -1){
                 world.setOrganism(neighbors.get(emptyPlace).getPosition(), this);
                 return true;
             }

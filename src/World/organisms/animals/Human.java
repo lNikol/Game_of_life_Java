@@ -25,6 +25,7 @@ public class Human extends Animal{
 
     @Override
     public void action(){
+        System.out.println("Your turn");
         world.setIsPlayerTurn(true);
         while (world.getIsPlayerTurn()) {
             if (world.getKeyPressed()) {
@@ -182,115 +183,57 @@ public class Human extends Animal{
         }
         else{
             switch (lastKeyPressed){
-               /* case 'w': {
+                case 'q': {
                     if(this.y >= 1 && this.y < world.getHeight()){
-                        if(isAbilityOn){
-                            if(this.y - 2 >= 0){
-                                this.y -= 2;
-                            }
-                            else{
-                                this.y -= 1;
-                                System.out.println("You cannot move two squares (you will move one square) because there is a border there \n");
-                            }
-                        }
-                        else{
-                            this.y -= 1;
-                        }
+                        this.y -= 1;
+                        System.out.println("You cannot move two squares (you will move one square) because there is a border there \n");
                         super.collision(world.getCell(this.getPosition()).org);
+                        world.setIsPlayerTurn(false);
                     }
                     else{
                         System.out.println("You cannot move to the top");
                     }
                     break;
                 }
-                case 'q': {
-                    if(this.y >= 0 && this.y < world.getHeight()){
+                case 'w': {
+                    if(this.y >= 1 && this.y < world.getHeight() && this.x >= 0 && this.x < world.getHeight()){
                         if(isAbilityOn){
-                            if(this.y + 2 >= world.getHeight()){
-                                this.y += 2;
-                            }
-                            else{
-                                this.y += 1;
-                                System.out.println("You cannot move two squares (you will move one square) because there is a border there \n");
-                            }
+                            x+=1;
+                            y-=1;
+                            world.setIsPlayerTurn(false);
+                            super.collision(world.getCell(this.getPosition()).org);
+                            world.setIsPlayerTurn(false);
                         }
                         else{
-                            this.y += 1;
+                            System.out.println("You cannot move to the top-top, please active the ability");
                         }
-                        super.collision(world.getCell(this.getPosition()).org);
                     }
                     else{
-                        System.out.println("You cannot move to the bottom");
+                        System.out.println("You cannot move to the top-top, please active the ability");
                     }
                     break;
                 }
                 case 'e': {
-                    if(this.x >= 1 && this.x < world.getWidth()){
+                    if(this.x >= 0 && this.x < world.getHeight() && this.y >= 1 && this.y < world.getHeight()){
                         if(isAbilityOn){
-                            if(this.x - 2 >= 0){
-                                this.x -= 2;
-                            }
-                            else{
-                                this.x -= 1;
-                                System.out.println("You cannot move two squares (you will move one square) because there is a border there \n");
+                            if(x + 2 < world.getHeight()){
+                                x+=2;
+                                y-=1;
+                                super.collision(world.getCell(this.getPosition()).org);
+                                world.setIsPlayerTurn(false);
                             }
                         }
-                        else{
-                            this.x -= 1;
-                        }
-                        super.collision(world.getCell(this.getPosition()).org);
+                        System.out.println("You cannot move to the right-top-top, please active the ability");
                     }
                     else{
-                        System.out.println("You cannot move to the left");
-                    }
-                    break;
-                }
-                case 'a': {
-                    if(this.x >= 1 && this.x < world.getWidth()){
-                        if(isAbilityOn){
-                            if(this.x - 2 >= 0){
-                                this.x -= 2;
-                            }
-                            else{
-                                this.x -= 1;
-                                System.out.println("You cannot move two squares (you will move one square) because there is a border there \n");
-                            }
-                        }
-                        else{
-                            this.x -= 1;
-                        }
-                        super.collision(world.getCell(this.getPosition()).org);
-                    }
-                    else{
-                        System.out.println("You cannot move to the left");
-                    }
-                    break;
-                }
-                case 's': {
-                    if(this.y >= 0 && this.y < world.getHeight()){
-                        if(isAbilityOn){
-                            if(this.y + 2 >= world.getHeight()){
-                                this.y += 2;
-                            }
-                            else{
-                                this.y += 1;
-                                System.out.println("You cannot move two squares (you will move one square) because there is a border there \n");
-                            }
-                        }
-                        else{
-                            this.y += 1;
-                        }
-                        super.collision(world.getCell(this.getPosition()).org);
-                    }
-                    else{
-                        System.out.println("You cannot move to the bottom");
+                        System.out.println("You cannot move to the right-top-top, please active the ability");
                     }
                     break;
                 }
                 case 'd': {
-                    if(this.x >= 0 && this.x < world.getWidth()){
+                    if(this.x >= 0 && this.x < world.getWidth() -1){
                         if(isAbilityOn){
-                            if(this.x + 2 < world.getWidth()){
+                            if(this.x + 2 < world.getHeight()){
                                 this.x += 2;
                             }
                             else{
@@ -302,12 +245,47 @@ public class Human extends Animal{
                             this.x += 1;
                         }
                         super.collision(world.getCell(this.getPosition()).org);
+                        world.setIsPlayerTurn(false);
                     }
                     else{
                         System.out.println("You cannot move to the right");
                     }
                     break;
-                }*/
+                }
+                case 's': {
+                    if(this.y >= 0 && this.y < world.getHeight() && this.x >= 1 && this.x < world.getHeight()){
+                        this.x-=1;
+                        this.y+=1;
+                        super.collision(world.getCell(this.getPosition()).org);
+                        world.setIsPlayerTurn(false);
+                    }
+                    else{
+                        System.out.println("You cannot move to the down-down");
+                    }
+                    break;
+                }
+                case 'a': { //left
+                    if(this.x >= 1 && this.x < world.getWidth()){
+                        if(isAbilityOn){
+                            if(this.x - 2 >= 0){
+                                this.x -= 2;
+                            }
+                            else{
+                                this.x -= 1;
+                                System.out.println("You cannot move two squares (you will move one square) because there is a border there \n");
+                            }
+                        }
+                        else{
+                            this.x -= 1;
+                        }
+                        super.collision(world.getCell(this.getPosition()).org);
+                        world.setIsPlayerTurn(false);
+                    }
+                    else{
+                        System.out.println("You cannot move to the left");
+                    }
+                    break;
+                }
                 default: break;
             }
         }

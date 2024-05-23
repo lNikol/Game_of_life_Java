@@ -8,7 +8,7 @@ import java.awt.geom.Path2D;
 
 public class Cell extends JPanel {
     Hexagon hex = null;
-    boolean isHex = true;
+    boolean isHex = false;
     public Organism org = null;
     public short x = -1, y = -1;
     public Cell(short yy, short xx, Organism organism){
@@ -16,9 +16,10 @@ public class Cell extends JPanel {
         this.x = xx;
         this.org = organism;
     }
-    public Cell(short yy, short xx){
+    public Cell(short yy, short xx, boolean isHex){
         this.y = yy;
         this.x = xx;
+        this.isHex = isHex;
     }
 
     public void setOrganism(Organism organism, boolean isHex){
@@ -48,6 +49,9 @@ public class Cell extends JPanel {
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
             this.hex.draw(g2);
+        }
+        else{
+            super.paintComponent(g);
         }
     }
 

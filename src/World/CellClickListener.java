@@ -31,7 +31,7 @@ public class CellClickListener extends MouseAdapter {
                 item.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent evt) {
                         try {
-                            addOrganismToCell(row, col, organism, true, w);
+                            addOrganismToCell(row, col, organism, w);
                         } catch (InstantiationException | IllegalAccessException | InvocationTargetException ex) {
                             throw new RuntimeException(ex);
                         }
@@ -43,7 +43,7 @@ public class CellClickListener extends MouseAdapter {
         }
     }
 
-    public static void addOrganismToCell(short row, short col, Class<?> organism, boolean newOrg, World w) throws InvocationTargetException, InstantiationException, IllegalAccessException {
+    public static void addOrganismToCell(short row, short col, Class<?> organism, World w) throws InvocationTargetException, InstantiationException, IllegalAccessException {
         if(w != null){
             Cell c = w.getMap().getCell(row, col);
             if (c.org == null){
@@ -53,18 +53,18 @@ public class CellClickListener extends MouseAdapter {
                         c.setNewColor(Color.RED);
                     }
                     else {
-                        c.setBackground(Color.red);
+                        c.setBackground(Color.RED);
                     }
                 }
                 else if(String.valueOf(organism.getPackage()).contains(".plants")){
                     if(c.isHex){
-                        c.setNewColor(Color.green);
+                        c.setNewColor(Color.GREEN);
                     }
                     else {
-                        c.setBackground(Color.green);
+                        c.setBackground(Color.GREEN);
                     }
                 }
-                if(newOrg) w.setOrganism(pos, (Organism) organism.getConstructors()[0].newInstance(pos, w));
+                w.setOrganism(pos, organism);
                 JLabel label = new JLabel(organism.getSimpleName());
                 c.removeAll();
                 c.add(label);
