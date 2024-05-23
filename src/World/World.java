@@ -98,6 +98,9 @@ public class World {
     public void setKey(char s){
         this.human.setKey(s);
     }
+    public char getKey(){
+        return this.human.getKey();
+    }
     public boolean setOrganism(short[] position, Organism org){
         if(this.map.getCell(position).org == null){
             Organism child = org.copy(position);
@@ -323,9 +326,9 @@ public class World {
                         }
                     }
                     c.add(label);
+                    c.revalidate();
                 }
                 c.repaint();
-                c.revalidate();
             }
         }
     }
@@ -637,7 +640,7 @@ public class World {
         }
         else{
             if (y == 0) {
-                if (x == 0)     {
+                if (x == 0) {
                     switch (new Random().nextInt(2) + 1) {
                         case 1: { // down
                             y += dist;
@@ -768,7 +771,7 @@ public class World {
                         }
                         case 5: { // right-top-top 5
                             if(dist == 2){
-                                x+=2;
+                                x+= x + 2 <= h?2:1;
                                 y-=1;
                             }
                             break;

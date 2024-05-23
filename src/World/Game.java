@@ -28,7 +28,7 @@ public class Game extends JFrame {
         setTitle("Game of life");
         setSize(500, 500);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        addKeyListener(new KeyAdapter());
+        addKeyListener(new KeyAdapter(this));
         readLogFile();
 
         if(!w.getIsHex()){
@@ -60,10 +60,11 @@ public class Game extends JFrame {
             }
         });
         add(button2);*/
-            requestFocusInWindow();
+        requestFocusInWindow();
         }
         else{
             setLayout(new GridBagLayout());
+
             GridBagConstraints gbc = new GridBagConstraints();
             gbc.insets = new Insets(0, 0, 0, 0);
             gbc.fill = GridBagConstraints.NONE;
@@ -96,6 +97,42 @@ public class Game extends JFrame {
             pack();
             setLocationRelativeTo(null);
             setVisible(true);
+
+
+            JButton button2 = new JButton("Zacznij turę");
+            button2.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    System.out.println("getKey: "+ w.getKey());
+                    if(w.getKey() != ' '){
+                        System.out.println("Turn: " + KeyAdapter.i++);
+
+                        w.takeATurn();
+                        w.setKey(' ');
+                        w.setKeyPressed(false);
+                        requestFocusInWindow();
+                    }
+                    else{
+                        System.out.println("getKeyPressed: "+ w.getKeyPressed());
+                    }
+                }
+            });
+            add(button2);
+
+            JButton button = new JButton("Pobierz grę");
+            button.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    try {
+                        saveToLog();
+                        requestFocusInWindow();
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
+            });
+            add(button);
+            requestFocusInWindow();
         }
     }
 
@@ -108,6 +145,11 @@ public class Game extends JFrame {
 
     // KeyListener do nasłuchiwania klawiszy
     private class KeyAdapter implements KeyListener {
+        static int i = 0;
+        Game g;
+        public KeyAdapter(Game game){
+            this.g = game;
+        }
         @Override
         public void keyTyped(KeyEvent e) {}
 
@@ -117,8 +159,23 @@ public class Game extends JFrame {
         @Override
         public void keyReleased(KeyEvent e) {
             if (!w.getKeyPressed()) {
-                w.setKeyPressed(true);
-                w.setKey(e.getKeyChar());
+                String buttons="qweasdo";
+                if(buttons.contains(String.valueOf(e.getKeyChar()))){
+                    if(e.getKeyChar() == 'o'){
+                        w.human.setKey('o');
+                    }
+                    else {
+                        if(w.getHumanIsAlive()){
+                            w.setKeyPressed(true);
+                            w.setKey(e.getKeyChar());
+                            requestFocusInWindow();
+                        }
+                        else{
+                            g.endGame();
+                        }
+                    }
+                }
+                requestFocusInWindow();
             }
         }
     }

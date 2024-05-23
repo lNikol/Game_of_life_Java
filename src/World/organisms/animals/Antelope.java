@@ -26,7 +26,6 @@ public class Antelope extends Animal{
         setPosition(pos, false);
         collision(world.getCell(pos).org);
     }
-
     @Override
     public void collision(Organism other) {
         if(other != null){

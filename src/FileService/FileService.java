@@ -19,6 +19,7 @@ public class FileService {
     public void writeToLog(String info, short width, short height) throws IOException {
         try (FileWriter fw = new FileWriter(fileName, false)){
             fw.write("World: height: "+height+", width: "+width + "\n" + info);
+            //fw.close();
         } catch (IOException e){
             System.out.println(e);
         }

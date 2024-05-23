@@ -7,7 +7,7 @@ import java.util.Random;
 
 public class Human extends Animal{
     private boolean isAbilityOn = false, isAbilityActive = false, abilityKeyPressed = false; // isAbilityActive 50%
-    private char lastKeyPressed;
+    private char lastKeyPressed = ' ';
     private short counterAfterAbility = 0, abilityCounter = -1;
 
     public Human(short y, short x, World w){
@@ -26,19 +26,7 @@ public class Human extends Animal{
     @Override
     public void action(){
         System.out.println("Your turn");
-        world.setIsPlayerTurn(true);
-        while (world.getIsPlayerTurn()) {
-            if (world.getKeyPressed()) {
-                world.setKeyPressed(false); // resetujemy stan po wykryciu naciśnięcia
-                moveSystem();
-            }
-            try {
-                Thread.sleep(100); // krótka przerwa, aby nie obciążać procesora
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        world.setIsPlayerTurn(false);
+        moveSystem();
     }
 
     public void setKey(char key){
@@ -48,6 +36,10 @@ public class Human extends Animal{
             this.isAbilityOn = true;
         }
     }
+    public char getKey(){
+        return this.lastKeyPressed;
+    }
+
 
     public void setAbilityKeyPressed(boolean pressed){
         this.abilityKeyPressed = pressed;
